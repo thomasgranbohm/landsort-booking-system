@@ -1,34 +1,28 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 import { nanoid } from "nanoid";
+import { PrimaryGeneratedColumn, Entity, Column } from "typeorm";
 
 @ObjectType()
 @Entity()
 export class User {
 	@Field()
-	@PrimaryKey()
+	@PrimaryGeneratedColumn()
 	uuid: string = nanoid(12);
 
 	@Field()
-	@Property()
+	@Column()
 	firstname!: string;
 
 	@Field()
-	@Property()
+	@Column()
 	lastname!: string;
-
-	@Field()
-	@Property({ name: "fullName", persist: false })
-	getFullName() {
-		return `${this.firstname} ${this.lastname}`
-	}
 
 	// TODO Add email verification
 	@Field()
-	@Property()
+	@Column()
 	email!: string;
 
 	@Field()
-	@Property()
+	@Column()
 	phonenumber: number;
 }

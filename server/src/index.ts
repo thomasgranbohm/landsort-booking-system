@@ -1,7 +1,6 @@
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
 import { __prod__, portNumber } from "./constants";
-import MOConfig from "./mikro-orm.config";
+import TOConfig from "./typeorm.config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -9,9 +8,11 @@ import { RoomResolver } from "./resolvers/Room.resolver";
 import { BunkResolver } from "./resolvers/Bunk.resolver";
 import { BookingResolver } from "./resolvers/Booking.resolver";
 
+import { createConnection } from "typeorm";
+import { Booking } from "./entities/Booking";
+
 const main = async () => {
-	const orm = await MikroORM.init(MOConfig);
-	orm.getMigrator().up();
+	await createConnection(TOConfig);
 
 	const app = express();
 
@@ -19,8 +20,7 @@ const main = async () => {
 		schema: await buildSchema({
 			resolvers: [RoomResolver, BunkResolver, BookingResolver],
 			validate: false
-		}),
-		context: () => ({ em: orm.em })
+		})
 	})
 
 	apolloServer.applyMiddleware({ app });

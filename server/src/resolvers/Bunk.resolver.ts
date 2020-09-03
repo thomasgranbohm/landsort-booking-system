@@ -1,32 +1,37 @@
-import { Resolver, Query, Ctx, Arg, Mutation } from "type-graphql";
-import { DatabaseContext, BunkResponse } from "../types";
+import { Resolver, Query, Arg, Mutation } from "type-graphql";
+import { BunkResponse } from "../types";
 import { Bunk } from "../entities/Bunk";
-import { Room } from "../entities/Room";
+import { getConnection, getRepository } from "typeorm";
 
 @Resolver()
 export class BunkResolver {
 
 	@Query(() => [Bunk], { nullable: true })
-	async bunks(
-		@Ctx() { em }: DatabaseContext
-	): Promise<Bunk[] | null> {
-		return em.find(Bunk, {});
+	async bunks(): Promise<Bunk[] | null> {
+		return getRepository(Bunk)
+			.createQueryBuilder("bunk")
+			.innerJoinAndSelect("bunk.room", "room")
+			.getMany();
 	}
 
 	@Query(() => [Bunk], { nullable: true })
 	async bunksInRoom(
-		@Arg('roomID') roomID: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('roomId') roomId: number
 	): Promise<Bunk[] | null> {
-		return em.find(Bunk, { room: roomID });
+		return Bunk.find({ where: { roomId } });
 	}
 
 	@Query(() => BunkResponse)
 	async bunk(
-		@Arg('id') id: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('id') id: number
 	): Promise<BunkResponse> {
-		const bunk = await em.findOne(Bunk, { id });
+		const bunk = await getConnection()
+			.createQueryBuilder()
+			.from(Bunk, "bunk")
+			.innerJoinAndSelect("bunk.room", "room", "room.id = bunk.roomId")
+			.where("bunk.id = :id", { id })
+			.getOne()
+
 		if (!bunk)
 			return {
 				errors: [
@@ -42,10 +47,9 @@ export class BunkResolver {
 	@Mutation(() => BunkResponse)
 	async createBunk(
 		@Arg('location') location: string,
-		@Arg('roomID') room: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('roomId') roomId: number
 	): Promise<BunkResponse> {
-		const foundBunk = await em.findOne(Bunk, { location, room });
+		const foundBunk = await Bunk.findOne({ where: { location, roomId } });
 		if (foundBunk) {
 			return {
 				errors: [{
@@ -54,27 +58,28 @@ export class BunkResolver {
 				}]
 			}
 		}
-		const foundRoom = await em.findOne(Room, { id: room });
-		if (!foundRoom)
-			return {
-				errors: [{
-					argument: "roomID",
-					message: "Room doesn't exist"
-				}]
+		try {
+			const bunk = await Bunk.create({ location, roomId }).save();
+			return { bunk };
+		} catch (err) {
+			if (err.code === '23503' || err.detail.includes('is not present in table'))
+				return {
+					errors: [{ argument: "roomId", message: "That room doesn't exist" }]
+				}
+			else {
+				console.error(err)
+				return { errors: [] }
 			}
-		const bunk = em.create(Bunk, { location, room });
-		await em.persistAndFlush(bunk);
-		return { bunk };
+		}
 	}
 
 	@Mutation(() => BunkResponse)
 	async updateBunk(
 		@Arg('bunkID') id: number,
 		@Arg('newLocation', { nullable: true }) newLocation: string,
-		@Arg('newRoom', { nullable: true }) roomID: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('newRoom', { nullable: true }) roomId: number
 	): Promise<BunkResponse> {
-		const bunk = await em.findOne(Bunk, { id });
+		const bunk = await Bunk.findOne(id);
 		if (!bunk)
 			return {
 				errors: [
@@ -85,26 +90,25 @@ export class BunkResolver {
 				]
 			}
 		if (typeof location !== "undefined") {
-			bunk.location = newLocation;
-			await em.persistAndFlush(bunk);
+			await Bunk.update({ id }, { location: newLocation });
 		}
-		if (typeof roomID !== "undefined") {
-			const room = await em.findOne(Room, { id: roomID });
-			if (room) {
-				bunk.room = room;
+		if (typeof roomId !== "undefined") {
+			try {
+				await Bunk.update({ id }, { roomId })
+			} catch (err) {
+				// TODO Kolla erroret
+				console.error(err);
 			}
-			await em.persistAndFlush(bunk);
 		}
 		return { bunk };
 	}
 
 	@Mutation(() => Boolean)
 	async deleteBunk(
-		@Arg('id') id: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('id') id: number
 	): Promise<Boolean> {
 		try {
-			await em.nativeDelete(Bunk, { id });
+			await Bunk.delete(id);
 		} catch (err) {
 			return false;
 		}

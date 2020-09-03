@@ -1,21 +1,24 @@
-import { Resolver, Query, Ctx, Arg, Mutation } from "type-graphql";
-import { DatabaseContext, RoomResponse } from "../types";
+import { Resolver, Query, Arg, Mutation } from "type-graphql";
+import { RoomResponse } from "../types";
 import { Room } from "../entities/Room";
+import { getRepository } from "typeorm";
 
 @Resolver()
 export class RoomResolver {
 
 	@Query(() => [Room])
-	rooms(@Ctx() { em }: DatabaseContext): Promise<Room[]> {
-		return em.find(Room, {});
+	rooms(): Promise<Room[]> {
+		return getRepository(Room)
+			.createQueryBuilder("room")
+			.leftJoinAndSelect("room.bunks", "bunk")
+			.getMany();
 	}
 
 	@Query(() => RoomResponse)
 	async room(
-		@Arg('id') id: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('id') id: number
 	): Promise<RoomResponse> {
-		const room = await em.findOne(Room, { id });
+		const room = await Room.findOne(id);
 		if (!room)
 			return {
 				errors: [
@@ -30,21 +33,19 @@ export class RoomResolver {
 
 	@Mutation(() => Room)
 	async createRoom(
-		@Arg('location') location: string,
-		@Ctx() { em }: DatabaseContext
+		@Arg('location') location: string
 	): Promise<Room> {
-		const room = em.create(Room, { location });
-		await em.persistAndFlush(room);
+		const room = await Room.create({ location }).save();
+		console.log(await Room.findOne(room.id))
 		return room;
 	}
 
 	@Mutation(() => RoomResponse)
 	async updateRoom(
 		@Arg('id') id: number,
-		@Arg('newLocation') newLocation: string,
-		@Ctx() { em }: DatabaseContext
+		@Arg('newLocation') newLocation: string
 	): Promise<RoomResponse> {
-		const room = await em.findOne(Room, { id });
+		const room = await Room.findOne(id);
 		if (!room)
 			return {
 				errors: [
@@ -55,19 +56,17 @@ export class RoomResolver {
 				]
 			}
 		if (typeof location !== "undefined") {
-			room.location = newLocation;
-			await em.persistAndFlush(room);
+			Room.update({ id }, { location: newLocation })
 		}
 		return { room };
 	}
 
 	@Mutation(() => Boolean)
 	async deleteRoom(
-		@Arg('id') id: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('id') id: number
 	): Promise<Boolean> {
 		try {
-			await em.nativeDelete(Room, { id });
+			await Room.delete(id);
 		} catch (err) {
 			return false;
 		}

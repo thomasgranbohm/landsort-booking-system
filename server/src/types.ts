@@ -1,12 +1,9 @@
 import { InputType, Field, ObjectType } from "type-graphql";
-import { EntityManager, IDatabaseDriver, Connection } from "@mikro-orm/core";
 import { Room } from "./entities/Room";
 import { Bunk } from "./entities/Bunk";
 import { Booking } from "./entities/Booking";
 
-export type DatabaseContext = {
-	em: EntityManager<any> & EntityManager<IDatabaseDriver<Connection>>;
-};
+export type DatabaseContext = {};
 
 @InputType()
 export class UserInput {

@@ -1,21 +1,21 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 import { nanoid } from "nanoid";
 import { Bunk } from "./Bunk";
+import { Entity, Column, ManyToOne, BaseEntity, PrimaryColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
-export class Booking {
+export class Booking extends BaseEntity {
 	@Field()
-	@PrimaryKey()
+	@PrimaryColumn()
 	uuid: string = nanoid(12);
 
 	@Field(() => Date)
-	@Property()
+	@Column()
 	startDate!: Date;
 
 	@Field(() => Date)
-	@Property()
+	@Column()
 	endDate!: Date;
 
 	@Field(() => Bunk)

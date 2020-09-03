@@ -1,15 +1,19 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from "typeorm";
+import { Bunk } from "./Bunk";
 
 @ObjectType()
 @Entity()
-export class Room {
+export class Room extends BaseEntity {
 	@Field()
-	@PrimaryKey()
+	@PrimaryGeneratedColumn()
 	id!: number;
 
 	@Field(() => String)
-	@Property()
+	@Column()
 	location: string;
 
+	@Field(() => [Bunk])
+	@OneToMany(() => Bunk, bunk => bunk.room)
+	bunks: Bunk[];
 }

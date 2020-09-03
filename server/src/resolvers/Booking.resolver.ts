@@ -1,31 +1,32 @@
-import { Resolver, Query, Ctx, Mutation, Arg } from "type-graphql";
+import { Resolver, Query, Mutation, Arg } from "type-graphql";
 import { Booking } from "../entities/Booking";
-import { DatabaseContext, BookingResponse } from "../types";
+import { BookingResponse } from "../types";
 import { INVALID_DATE } from "../strings";
+import { Between, LessThanOrEqual, MoreThanOrEqual, getRepository } from "typeorm";
+import { Bunk } from "../entities/Bunk";
 
 @Resolver()
 export class BookingResolver {
 	@Query(() => [Booking])
-	bookings(
-		@Ctx() { em }: DatabaseContext
-	): Promise<Booking[]> {
-		return em.find(Booking, {});
+	bookings(): Promise<Booking[]> {
+		return getRepository(Booking)
+			.createQueryBuilder("booking")
+			.innerJoinAndSelect("booking.bunk", "bunk")
+			.innerJoinAndSelect("bunk.room", "room")
+			.getMany();
 	}
 
 	@Query(() => Booking, { nullable: true })
 	booking(
-		@Arg('bookingID') uuid: string,
-		@Ctx() { em }: DatabaseContext
-	): Promise<Booking | null> {
-		return em.findOne(Booking, { uuid });
+		@Arg('bookingID') uuid: string,): Promise<Booking | undefined> {
+		return Booking.findOne(uuid);
 	}
 
 	@Mutation(() => BookingResponse, { nullable: true })
 	async createBooking(
 		@Arg('startDate') startDateString: string,
 		@Arg('endDate') endDateString: string,
-		@Arg('bunkID') bunkID: number,
-		@Ctx() { em }: DatabaseContext
+		@Arg('bunkID') bunkID: number
 	): Promise<BookingResponse> {
 		let startDate = new Date(startDateString),
 			endDate = new Date(endDateString);
@@ -40,94 +41,42 @@ export class BookingResolver {
 			}
 		}
 
-		if (startDate > endDate)
+		if (startDate > endDate) {
 			return {
 				errors: [{
 					argument: "startDate",
 					message: "startDate cannot come after endDate"
 				}]
 			};
+		}
 
-		// FÅR inte alla
-		// const foundBooking = await em.findOne(
-		// 	Booking,
-		// 	{
-		// 		$and: [
-		// 			{ bunk: bunkID },
-		// 			{
-		// 				$or: [
-		// 					{
-		// 						startDate: { $lte: startDate },
-		// 						endDate: { $gte: startDate }
-		// 					},
-		// 					{
-		// 						startDate: { $lte: startDate },
-		// 						endDate: { $gte: endDate }
-		// 					},
-		// 					{
-		// 						$and: [
-		// 							{
-		// 								$and: [
-		// 									{
-		// 										startDate: { $gte: startDate },
-		// 									},
-		// 									{
-		// 										startDate: { $lte: endDate },
-		// 									}
-		// 								]
-		// 							},
-		// 							{
-		// 								$and: [
-		// 									{
-		// 										endDate: { $gte: startDate },
-		// 									},
-		// 									{
-		// 										endDate: { $lte: endDate },
-		// 									}
-		// 								]
-		// 							},
-		// 						]
-		// 					}
-		// 				]
-		// 			}
-		// 		]
-		// 	}
-		// );
-		const foundBooking = await em.findOne(
-			Booking,
-			{
-				$and: [
-					{ bunk: bunkID },
-					{
-						$or: [
-							{
-								$or: [
-									{
-										$and: [
-											{ startDate: { $gte: startDate } },
-											{ startDate: { $lt: endDate } }
-										]
-									},
-									{
-										$and: [
-											{ endDate: { $gte: startDate } },
-											{ endDate: { $lt: endDate } }
-										]
-									},
-								]
-							},
-							{
-								$and: [
-									{ startDate: { $lte: startDate } },
-									{ endDate: { $gte: endDate } },
-								]
-							}
-						]
-					}
-				]
+		const bunk = await Bunk.findOne(bunkID);
+		if (!bunk) {
+			return {
+				errors: [{
+					argument: "bunk",
+					message: "That bunk doesn't exist"
+				}]
 			}
-		).catch((err) => console.error("Errore.", err));
+		}
 
+		const foundBooking = await Booking.findOne({
+			where: [
+				{
+					bunk,
+					startDate: LessThanOrEqual(startDate),
+					endDate: MoreThanOrEqual(endDate)
+				},
+				{
+					bunk,
+					startDate: Between(startDate, endDate)
+				},
+				{
+					bunk,
+					endDate: Between(startDate, endDate)
+				},
+			]
+		});
 
 		if (foundBooking) {
 			return {
@@ -138,28 +87,16 @@ export class BookingResolver {
 			}
 		}
 
-		const booking = em.create(Booking, { startDate, endDate, bunk: bunkID });
-		try {
-			await em.persistAndFlush(booking);
-		} catch (err) {
-			console.error(err)
-			return {
-				errors: [{
-					argument: "Error",
-					message: "Wok"
-				}]
-			};
-		}
+		const booking = await Booking.create({ startDate, endDate, bunk }).save();
 		return { booking };
 	}
 
 	@Mutation(() => Boolean)
 	async deleteBooking(
-		@Arg('bookingID') bookingID: string,
-		@Ctx() { em }: DatabaseContext
+		@Arg('bookingID') bookingID: string
 	): Promise<Boolean> {
 		try {
-			em.nativeDelete(Booking, { uuid: bookingID });
+			Booking.delete({ uuid: bookingID });
 		} catch (err) {
 			return false;
 		}

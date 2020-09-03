@@ -1,29 +1,29 @@
-import { Entity, PrimaryKey, Property, ManyToOne, OneToMany, Collection } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
 import { Room } from "./Room";
 import { Booking } from "./Booking";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, BaseEntity } from "typeorm";
 
 @ObjectType()
 @Entity()
-export class Bunk {
+export class Bunk extends BaseEntity {
 	@Field()
-	@PrimaryKey()
+	@PrimaryGeneratedColumn()
 	id!: number;
 
 	@Field()
-	@Property()
+	@Column()
 	location: string
 
-	// @Field()
-	// @Property()
-	// available: Boolean = true;
+	@Field()
+	@Column()
+	roomId: number;
 
 	@Field(() => Room)
-	@ManyToOne(() => Room)
+	@ManyToOne(() => Room, room => room.bunks)
 	room: Room;
 
 	@Field(() => [Booking])
 	@OneToMany(() => Booking, booking => booking.bunk)
-	bookings = new Collection<Booking>(this);
+	bookings: Booking[];
 
 }
