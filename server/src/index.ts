@@ -7,6 +7,7 @@ import { buildSchema } from "type-graphql";
 import { RoomResolver } from "./resolvers/Room.resolver";
 import { BunkResolver } from "./resolvers/Bunk.resolver";
 import { BookingResolver } from "./resolvers/Booking.resolver";
+import { UserResolver } from "./resolvers/User.resolver";
 
 import { createConnection } from "typeorm";
 import { Booking } from "./entities/Booking";
@@ -18,10 +19,12 @@ const main = async () => {
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [RoomResolver, BunkResolver, BookingResolver],
+			resolvers: [RoomResolver, BunkResolver, BookingResolver, UserResolver],
 			validate: false
 		})
 	})
+
+	// await Booking.delete({})
 
 	apolloServer.applyMiddleware({ app });
 

@@ -1,12 +1,13 @@
 import { Field, ObjectType } from "type-graphql";
 import { nanoid } from "nanoid";
-import { PrimaryGeneratedColumn, Entity, Column } from "typeorm";
+import { Entity, Column, BaseEntity, OneToMany, PrimaryColumn } from "typeorm";
+import { Booking } from "./Booking";
 
 @ObjectType()
 @Entity()
-export class User {
+export class User extends BaseEntity {
 	@Field()
-	@PrimaryGeneratedColumn()
+	@PrimaryColumn()
 	uuid: string = nanoid(12);
 
 	@Field()
@@ -22,7 +23,11 @@ export class User {
 	@Column()
 	email!: string;
 
-	@Field()
+	@Field(() => String, { nullable: true })
 	@Column()
-	phonenumber: number;
+	phonenumber?: string;
+
+	@Field(() => [Booking], { nullable: true })
+	@OneToMany(() => Booking, booking => booking.bunk)
+	bookings: Booking[];
 }

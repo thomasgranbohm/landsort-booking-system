@@ -13,7 +13,7 @@ export class Room extends BaseEntity {
 	@Column()
 	location: string;
 
-	@Field(() => [Bunk])
+	@Field(() => [Bunk], { defaultValue: [] })
 	@OneToMany(() => Bunk, bunk => bunk.room)
 	bunks: Bunk[];
 }

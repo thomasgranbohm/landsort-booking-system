@@ -35,9 +35,7 @@ export class RoomResolver {
 	async createRoom(
 		@Arg('location') location: string
 	): Promise<Room> {
-		const room = await Room.create({ location }).save();
-		console.log(await Room.findOne(room.id))
-		return room;
+		return Room.create({ location }).save();
 	}
 
 	@Mutation(() => RoomResponse)

@@ -12,18 +12,13 @@ export class Bunk extends BaseEntity {
 
 	@Field()
 	@Column()
-	location: string
-
-	@Field()
-	@Column()
-	roomId: number;
+	location: string;
 
 	@Field(() => Room)
 	@ManyToOne(() => Room, room => room.bunks)
 	room: Room;
 
-	@Field(() => [Booking])
+	@Field(() => [Booking], { defaultValue: [] })
 	@OneToMany(() => Booking, booking => booking.bunk)
 	bookings: Booking[];
-
 }

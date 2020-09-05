@@ -1,9 +1,10 @@
 import { Resolver, Query, Mutation, Arg } from "type-graphql";
 import { Booking } from "../entities/Booking";
-import { BookingResponse } from "../types";
+import { BookingResponse, BookingInput, CustomDate } from "../types";
 import { INVALID_DATE } from "../strings";
 import { Between, LessThanOrEqual, MoreThanOrEqual, getRepository } from "typeorm";
 import { Bunk } from "../entities/Bunk";
+import { User } from "../entities/User";
 
 @Resolver()
 export class BookingResolver {
@@ -13,23 +14,24 @@ export class BookingResolver {
 			.createQueryBuilder("booking")
 			.innerJoinAndSelect("booking.bunk", "bunk")
 			.innerJoinAndSelect("bunk.room", "room")
+			.innerJoinAndSelect("booking.user", "user")
 			.getMany();
 	}
 
 	@Query(() => Booking, { nullable: true })
 	booking(
-		@Arg('bookingID') uuid: string,): Promise<Booking | undefined> {
+		@Arg('bookingId') uuid: string,): Promise<Booking | undefined> {
 		return Booking.findOne(uuid);
 	}
 
 	@Mutation(() => BookingResponse, { nullable: true })
 	async createBooking(
-		@Arg('startDate') startDateString: string,
-		@Arg('endDate') endDateString: string,
-		@Arg('bunkID') bunkID: number
+		@Arg('input') input: BookingInput
 	): Promise<BookingResponse> {
-		let startDate = new Date(startDateString),
-			endDate = new Date(endDateString);
+		const { bunkId, endDateString, startDateString, userId } = input;
+
+		let startDate = new CustomDate(startDateString),
+			endDate = new CustomDate(endDateString);
 
 		if (startDate.toString() === INVALID_DATE || endDate.toString() === INVALID_DATE) {
 			let wrongDate = startDate.toString() === INVALID_DATE ? "startDate" : "endDate";
@@ -50,7 +52,7 @@ export class BookingResolver {
 			};
 		}
 
-		const bunk = await Bunk.findOne(bunkID);
+		const bunk = await Bunk.findOne(bunkId);
 		if (!bunk) {
 			return {
 				errors: [{
@@ -59,6 +61,26 @@ export class BookingResolver {
 				}]
 			}
 		}
+
+		const user = await User.findOne(userId)
+		if (!user) {
+			return {
+				errors: [{
+					argument: "user",
+					message: "That user doesn't exist"
+				}]
+			}
+		}
+
+		console.log("------- DATES --------")
+		console.log(startDate.toString(), endDate.toString())
+
+
+		let dateAfterStart = startDate.getTomorrow()
+		let dateBeforeEnd = endDate.getYesterday()
+		console.log("------- DATES --------")
+		console.log(startDate.toString(), endDate.toString())
+		console.log(dateAfterStart.toString(), dateBeforeEnd.toString())
 
 		const foundBooking = await Booking.findOne({
 			where: [
@@ -69,14 +91,15 @@ export class BookingResolver {
 				},
 				{
 					bunk,
-					startDate: Between(startDate, endDate)
+					startDate: Between(startDate, dateBeforeEnd)
 				},
 				{
 					bunk,
-					endDate: Between(startDate, endDate)
+					endDate: Between(dateAfterStart, endDate)
 				},
 			]
 		});
+
 
 		if (foundBooking) {
 			return {
@@ -87,16 +110,19 @@ export class BookingResolver {
 			}
 		}
 
-		const booking = await Booking.create({ startDate, endDate, bunk }).save();
+		const booking = await Booking.create({ startDate, endDate, bunk, user }).save();
 		return { booking };
 	}
 
 	@Mutation(() => Boolean)
 	async deleteBooking(
-		@Arg('bookingID') bookingID: string
+		@Arg('bookingId') bookingId: string,
+		@Arg('cancellationId') cancellationId: string
 	): Promise<Boolean> {
+		const booking = await Booking.findOne({ uuid: bookingId, cancellationId })
+		if (!booking) return false;
 		try {
-			Booking.delete({ uuid: bookingID });
+			Booking.delete({ uuid: bookingId, cancellationId });
 		} catch (err) {
 			return false;
 		}

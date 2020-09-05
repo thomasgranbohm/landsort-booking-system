@@ -2,6 +2,7 @@ import { Resolver, Query, Arg, Mutation } from "type-graphql";
 import { BunkResponse } from "../types";
 import { Bunk } from "../entities/Bunk";
 import { getConnection, getRepository } from "typeorm";
+import { Room } from "../entities/Room";
 
 @Resolver()
 export class BunkResolver {
@@ -49,7 +50,13 @@ export class BunkResolver {
 		@Arg('location') location: string,
 		@Arg('roomId') roomId: number
 	): Promise<BunkResponse> {
-		const foundBunk = await Bunk.findOne({ where: { location, roomId } });
+		const room = await Room.findOne(roomId);
+		if (!room)
+			return {
+				errors: [{ argument: "roomId", message: "That room doesn't exist" }]
+			};
+
+		const foundBunk = await Bunk.findOne({ where: { location, room } });
 		if (foundBunk) {
 			return {
 				errors: [{
@@ -59,7 +66,7 @@ export class BunkResolver {
 			}
 		}
 		try {
-			const bunk = await Bunk.create({ location, roomId }).save();
+			const bunk = await Bunk.create({ location, room }).save();
 			return { bunk };
 		} catch (err) {
 			if (err.code === '23503' || err.detail.includes('is not present in table'))
@@ -93,11 +100,14 @@ export class BunkResolver {
 			await Bunk.update({ id }, { location: newLocation });
 		}
 		if (typeof roomId !== "undefined") {
-			try {
-				await Bunk.update({ id }, { roomId })
-			} catch (err) {
-				// TODO Kolla erroret
-				console.error(err);
+			const room = await Room.findOne(id);
+			if (room) {
+				try {
+					await Bunk.update({ id }, { room })
+				} catch (err) {
+					// TODO Kolla erroret
+					console.error(err);
+				}
 			}
 		}
 		return { bunk };
