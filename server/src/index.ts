@@ -8,9 +8,7 @@ import { RoomResolver } from "./resolvers/Room.resolver";
 import { BunkResolver } from "./resolvers/Bunk.resolver";
 import { BookingResolver } from "./resolvers/Booking.resolver";
 import { UserResolver } from "./resolvers/User.resolver";
-
 import { createConnection } from "typeorm";
-import { Booking } from "./entities/Booking";
 
 const main = async () => {
 	await createConnection(TOConfig);
@@ -23,8 +21,6 @@ const main = async () => {
 			validate: false
 		})
 	})
-
-	// await Booking.delete({})
 
 	apolloServer.applyMiddleware({ app });
 

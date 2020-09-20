@@ -72,15 +72,8 @@ export class BookingResolver {
 			}
 		}
 
-		console.log("------- DATES --------")
-		console.log(startDate.toString(), endDate.toString())
-
-
 		let dateAfterStart = startDate.getTomorrow()
 		let dateBeforeEnd = endDate.getYesterday()
-		console.log("------- DATES --------")
-		console.log(startDate.toString(), endDate.toString())
-		console.log(dateAfterStart.toString(), dateBeforeEnd.toString())
 
 		const foundBooking = await Booking.findOne({
 			where: [

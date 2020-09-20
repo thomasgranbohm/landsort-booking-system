@@ -1,9 +1,9 @@
-import { InputType, Field, ObjectType } from "type-graphql";
-import { Room } from "./entities/Room";
-import { Bunk } from "./entities/Bunk";
+import { IsEmail, Length } from "class-validator";
+import { Field, InputType, ObjectType } from "type-graphql";
 import { Booking } from "./entities/Booking";
+import { Bunk } from "./entities/Bunk";
+import { Room } from "./entities/Room";
 import { User } from "./entities/User";
-import { Length, IsEmail } from "class-validator";
 
 export type DatabaseContext = {};
 
