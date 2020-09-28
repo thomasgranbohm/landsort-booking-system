@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Room extends Model
 {
-    use HasFactory;
+	use HasFactory;
+
+	protected $fillable = ['location'];
+
+	public function bunks()
+	{
+		return $this->hasMany("App\Models\Bunk");
+	}
 }

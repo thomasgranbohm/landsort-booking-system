@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bunk extends Model
 {
-    use HasFactory;
+	use HasFactory;
+
+	protected $fillable = ['location', 'room_id'];
+
+	public function room()
+	{
+		return $this->belongsTo("App\Models\Room");
+	}
 }
