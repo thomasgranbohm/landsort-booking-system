@@ -38,7 +38,7 @@ class RoomController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		// curl api.example.dev/rooms -X POST -d "location=K"
+		// curl api.example.test/rooms -X POST -d "location=A"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|min:1|max:16'
 		]);

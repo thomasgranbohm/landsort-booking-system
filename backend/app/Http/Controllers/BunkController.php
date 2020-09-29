@@ -26,7 +26,7 @@ class BunkController extends Controller
 	 */
 	public function index(Room $room)
 	{
-		//
+		// curl api.example.test/rooms/1/bunks
 		return Room::with('bunks')
 			->find($room->id)
 			->bunks;
@@ -40,7 +40,7 @@ class BunkController extends Controller
 	 */
 	public function store(Request $request, Room $room)
 	{
-		//
+		// curl api.example.test/rooms/1/bunks -X POST -d "location=A"
 		$validator = Validator::make(
 			array_merge($request->all(), ["room_id" => $room->id]),
 			[
@@ -66,7 +66,7 @@ class BunkController extends Controller
 	 */
 	public function show(Bunk $bunk)
 	{
-		//
+		// curl api.example.test/bunks/1
 		return $bunk;
 	}
 
@@ -79,7 +79,7 @@ class BunkController extends Controller
 	 */
 	public function update(Request $request, Bunk $bunk)
 	{
-		//
+		// curl api.example.test/bunks/1 -X PUT -d "location=B"
 		$validator = Validator::make(
 			$request->all(),
 			[
@@ -118,7 +118,7 @@ class BunkController extends Controller
 	 */
 	public function destroy(Bunk $bunk)
 	{
-		//
+		// curl api.example.test/bunks/2 -X DELETE
 		return $bunk->delete();
 	}
 }

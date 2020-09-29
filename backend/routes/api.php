@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BunkController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
@@ -20,4 +21,9 @@ Route::apiResource('rooms.bunks', BunkController::class)->shallow();
 Route::apiResource('users', UserController::class)
 	->except([
 		'index', 'destroy'
+	]);
+
+Route::apiResource('bookings', BookingController::class)
+	->except([
+		'update'
 	]);
