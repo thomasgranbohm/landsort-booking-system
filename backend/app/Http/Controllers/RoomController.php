@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
  *	GET 		/rooms/{room} 	show 		rooms.show
  *	PUT/PATCH 	/rooms/{room} 	update 		rooms.update
  *	DELETE 		/rooms/{room} 	destroy 	rooms.destroy
-*/
+ */
 
 
 class RoomController extends Controller
@@ -26,8 +26,8 @@ class RoomController extends Controller
 	 */
 	public function index()
 	{
-		// curl http://api.example.dev/rooms
-		return Room::all();
+		// curl http://api.example.test/rooms
+		return Room::with('bunks')->get();
 	}
 
 	/**
@@ -56,8 +56,8 @@ class RoomController extends Controller
 	 */
 	public function show(Room $room)
 	{
-		// curl api.example.dev/rooms/1
-		return $room;
+		// curl api.example.test/rooms/1
+		return $room::where("id", $room->id)->with('bunks')->first();
 	}
 
 	/**
@@ -69,7 +69,7 @@ class RoomController extends Controller
 	 */
 	public function update(Request $request, Room $room)
 	{
-		// curl api.example.dev/rooms/1 -X PUT -d "location=D"
+		// curl api.example.test/rooms/1 -X PUT -d "location=D"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|max:16'
 		]);
@@ -88,7 +88,7 @@ class RoomController extends Controller
 	 */
 	public function destroy(Room $room)
 	{
-		// curl api.example.dev/rooms/1 -X DELETE
+		// curl api.example.test/rooms/1 -X DELETE
 		return $room->delete();
 	}
 }

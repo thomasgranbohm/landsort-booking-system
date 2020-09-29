@@ -13,6 +13,17 @@ class Booking extends Model
 	protected $fillable = [
 		"start_date",
 		"end_date",
-		"bunk_id"
+		"bunk_id",
+		"user_id"
 	];
+
+	public function user()
+	{
+		return $this->belongsTo("App\Models\User");
+	}
+
+	public function bunk()
+	{
+		return $this->belongsTo("App\Models\Bunk");
+	}
 }

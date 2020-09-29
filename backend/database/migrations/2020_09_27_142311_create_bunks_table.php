@@ -16,6 +16,11 @@ class CreateBunksTable extends Migration
 		Schema::create('bunks', function (Blueprint $table) {
 			$table->id();
 			$table->string('location');
+			$table->unsignedBigInteger('room_id');
+			$table->foreign('room_id')
+				->references('id')
+				->on('rooms')
+				->onDelete('cascade');
 			$table->timestamps();
 		});
 	}

@@ -17,7 +17,7 @@ class BookingController extends Controller
 	public function index()
 	{
 		// curl api.example.test/bookings/
-		return Booking::all();
+		return Booking::with(['bunk', 'user', 'bunk.room'])->get();
 	}
 
 	/**
@@ -33,8 +33,9 @@ class BookingController extends Controller
 			$request->all(),
 			[
 				"bunk_id" => ["required", "exists:bunks,id"],
+				"user_id" => ["required", "exists:users,id"],
 				"start_date" => ["required", "date"],
-				"end_date" => ["required", "date"]
+				"end_date" => ["required", "date"],
 			]
 		);
 
@@ -45,6 +46,7 @@ class BookingController extends Controller
 		}
 
 		$bunk_id = $validator->validated()['bunk_id'];
+		$user_id = $validator->validated()['user_id'];
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
 		$end_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['end_date'])));
 
@@ -93,7 +95,8 @@ class BookingController extends Controller
 		return Booking::create([
 			"start_date" => $start_date,
 			"end_date" => $end_date,
-			"bunk_id" => $bunk_id
+			"bunk_id" => $bunk_id,
+			"user_id" => $user_id
 		])->save();
 	}
 
@@ -106,7 +109,7 @@ class BookingController extends Controller
 	public function show(Booking $booking)
 	{
 		// curl api.example.test/booking/{uuid}
-		return $booking;
+		return Booking::where('id', $booking->id)->with(['bunk', 'user', 'bunk.room'])->first();
 	}
 
 	/**

@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
  * GET 			/bunks/{bunk} 				show 		bunks.show
  * PUT/PATCH 	/bunks/{bunk} 				update 		bunks.update
  * DELETE 		/bunks/{bunk} 				destroy 	bunks.destroy
-*/
+ */
 
 class BunkController extends Controller
 {
@@ -67,7 +67,7 @@ class BunkController extends Controller
 	public function show(Bunk $bunk)
 	{
 		// curl api.example.test/bunks/1
-		return $bunk;
+		return $bunk::where("id", $bunk->id)->with('room')->first();
 	}
 
 	/**

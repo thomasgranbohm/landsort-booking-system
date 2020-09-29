@@ -16,4 +16,9 @@ class User extends Model
 		'email',
 		'phonenumber'
 	];
+
+	public function bookings()
+	{
+		return $this->hasMany("App\Models\Booking");
+	}
 }

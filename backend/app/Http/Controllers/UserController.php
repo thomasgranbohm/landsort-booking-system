@@ -46,7 +46,7 @@ class UserController extends Controller
 	public function show(User $user)
 	{
 		//
-		return $user;
+		return User::where('id', $user->id)->with('bookings')->first();
 	}
 
 	/**
