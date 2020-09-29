@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Bunk;
 use App\Models\Room;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +27,9 @@ class BunkController extends Controller
 	public function index(Room $room)
 	{
 		//
-		return Room::with('bunks')->find($room->id)->bunks;
+		return Room::with('bunks')
+			->find($room->id)
+			->bunks;
 	}
 
 	/**
@@ -47,7 +48,11 @@ class BunkController extends Controller
 				"room_id" => ["required", "exists:rooms,id"],
 			]
 		);
-		if ($validator->fails()) return $validator->errors()->toJson();
+		if ($validator->fails()) {
+			return $validator
+				->errors()
+				->toJson();
+		}
 
 		return Bunk::create($validator->validated())
 			->save();
@@ -81,16 +86,26 @@ class BunkController extends Controller
 				"location" => ['required', 'max:16']
 			]
 		);
-		if ($validator->fails()) return $validator->errors()->toJson();
+		if ($validator->fails()) {
+			return $validator
+				->errors()
+				->toJson();
+		}
 
-		$location = $validator->validated()['location'];
+		$location = $validator
+			->validated()['location'];
 
 		$bunkWithLocation = Room::findOrFail($bunk->room_id)
 			->bunks()
 			->where("location", $location)
 			->first();
 
-		if ($bunkWithLocation) return $validator->errors()->add("location", "That location already exists in this room.")->toJson();
+		if ($bunkWithLocation) {
+			return $validator
+				->errors()
+				->add("location", "That location already exists in this room.")
+				->toJson();
+		}
 		$bunk->location = $location;
 		return $bunk->save();
 	}
