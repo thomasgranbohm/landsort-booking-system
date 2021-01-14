@@ -6,7 +6,11 @@ import InputError from "../InputError/InputError";
 type Props = {
 	formTitle: string;
 	buttonText: string;
-	onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+	onSubmit: (
+		startDate: Date,
+		endDate: Date,
+		e: FormEvent<HTMLFormElement>
+	) => void;
 	startLabel?: string;
 	endLabel?: string;
 };
@@ -55,7 +59,7 @@ const DateForm = ({
 					);
 				} else {
 					setErrorText(undefined);
-					onSubmit(e);
+					onSubmit(startDate, endDate, e);
 				}
 			}}
 		>

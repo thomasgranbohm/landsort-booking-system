@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
+use App\Models\Bunk;
 use App\Models\Room;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Contracts\Service\Attribute\Required;
 
 /* 
  *	Verb 		URI 			Action 		Route Name
@@ -26,7 +31,7 @@ class RoomController extends Controller
 	 */
 	public function index()
 	{
-		// curl http://api.example.test/rooms
+		// curl localhost:8080/api/rooms
 		return Room::with('bunks')->get();
 	}
 
@@ -38,7 +43,7 @@ class RoomController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		// curl api.example.test/rooms -X POST -d "location=A"
+		// curl localhost:8080/api/rooms -X POST -d "location=A"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|min:1|max:16'
 		]);
@@ -56,9 +61,10 @@ class RoomController extends Controller
 	 */
 	public function show(Room $room)
 	{
-		// curl api.example.test/rooms/1
+		// curl localhost:8080/api/rooms/1
 		return $room::where("id", $room->id)->with('bunks')->first();
 	}
+
 
 	/**
 	 * Update the specified resource in storage.
@@ -69,7 +75,7 @@ class RoomController extends Controller
 	 */
 	public function update(Request $request, Room $room)
 	{
-		// curl api.example.test/rooms/1 -X PUT -d "location=D"
+		// curl localhost:8080/api/rooms/1 -X PUT -d "location=D"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|max:16'
 		]);
@@ -88,7 +94,7 @@ class RoomController extends Controller
 	 */
 	public function destroy(Room $room)
 	{
-		// curl api.example.test/rooms/1 -X DELETE
+		// curl localhost:8080/api/rooms/1 -X DELETE
 		return $room->delete();
 	}
 }

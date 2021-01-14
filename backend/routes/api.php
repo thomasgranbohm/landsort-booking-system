@@ -16,11 +16,13 @@ Route::get('/', function () {
 });
 
 Route::apiResource('rooms', RoomController::class);
+
+Route::get("/bunks/available", [BunkController::class, "available"]);
 Route::apiResource('rooms.bunks', BunkController::class)->shallow();
 
 Route::apiResource('users', UserController::class)
 	->except([
-		'index', 'destroy'
+		'destroy'
 	]);
 
 Route::apiResource('bookings', BookingController::class)

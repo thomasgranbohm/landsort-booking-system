@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Bunk;
 use App\Models\Room;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -26,10 +28,21 @@ class BunkController extends Controller
 	 */
 	public function index(Room $room)
 	{
-		// curl api.example.test/rooms/1/bunks
-		return Room::with('bunks')
+		// curl localhost:8080/api/rooms/1/bunks
+		return Room::with('bunks', 'bunks.bookings')
 			->find($room->id)
 			->bunks;
+	}
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  \App\Models\Bunk  $bunk
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show(Bunk $bunk)
+	{
+		// curl localhost:8080/api/bunks/1
+		return $bunk::where("id", $bunk->id)->with('room', 'bookings')->first();
 	}
 
 	/**
@@ -40,7 +53,7 @@ class BunkController extends Controller
 	 */
 	public function store(Request $request, Room $room)
 	{
-		// curl api.example.test/rooms/1/bunks -X POST -d "location=A"
+		// curl localhost:8080/api/rooms/1/bunks -X POST -d "location=A"
 		$validator = Validator::make(
 			array_merge($request->all(), ["room_id" => $room->id]),
 			[
@@ -58,17 +71,58 @@ class BunkController extends Controller
 			->save();
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Models\Bunk  $bunk
-	 * @return \Illuminate\Http\Response
-	 */
-	public function show(Bunk $bunk)
+	// curl localhost:8080/api/bunks/available?start_date=2021-01-15&end_date=2021-01-17
+	public function available(Request $request)
 	{
-		// curl api.example.test/bunks/1
-		return $bunk::where("id", $bunk->id)->with('room')->first();
+		$validator = Validator::make(
+			$request->all(),
+			[
+				"start_date" => ["required", "date"],
+				"end_date" => ["required", "date"],
+			]
+		);
+
+		if ($validator->fails()) {
+			return $validator
+				->errors()
+				->toJson();
+		}
+
+		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
+		$end_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['end_date'])));
+
+		if ($start_date > $end_date || $start_date == $end_date) {
+			$validator
+				->errors()
+				->add("end_date", "The end date cannot be before or the same as the start date.");
+		}
+
+		$dateAfterStart = date('Y-m-d', strtotime($start_date . " +1 day"));
+		$dateBeforeEnd = date('Y-m-d', strtotime($end_date . " -1 day"));
+
+		$availableBunks = Bunk::with("room:id,location")
+			->whereDoesntHave(
+				"bookings",
+				function (Builder $builder) use ($dateAfterStart, $dateBeforeEnd, $start_date, $end_date) {
+					$builder
+						->where([
+							["start_date", "<=", $start_date],
+							["end_date", ">=", $end_date],
+						])
+						->orWhereBetween("start_date", [$start_date, $dateBeforeEnd])
+						->orWhereBetween("end_date", [$dateAfterStart, $end_date]);
+				}
+			)->get();
+
+		if ($validator->errors()->isNotEmpty()) {
+			return $validator
+				->errors()
+				->toJson();
+		}
+
+		return $availableBunks;
 	}
+
 
 	/**
 	 * Update the specified resource in storage.
@@ -79,7 +133,7 @@ class BunkController extends Controller
 	 */
 	public function update(Request $request, Bunk $bunk)
 	{
-		// curl api.example.test/bunks/1 -X PUT -d "location=B"
+		// curl localhost:8080/api/bunks/1 -X PUT -d "location=B"
 		$validator = Validator::make(
 			$request->all(),
 			[
@@ -118,7 +172,7 @@ class BunkController extends Controller
 	 */
 	public function destroy(Bunk $bunk)
 	{
-		// curl api.example.test/bunks/2 -X DELETE
+		// curl localhost:8080/api/bunks/2 -X DELETE
 		return $bunk->delete();
 	}
 }

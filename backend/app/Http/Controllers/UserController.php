@@ -9,11 +9,23 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		// curl localhost:8080/api/users
+		return User::all();
+	}
+	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
+
+	// curl localhost:8080/api/users -X POST -d "email=thomas@granbohm.dev&firstname=Thomas&lastname=Granbohm&phonenumber=0736761614"
 	public function store(Request $request)
 	{
 		//
