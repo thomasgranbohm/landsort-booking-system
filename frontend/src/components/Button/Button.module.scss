@@ -1,0 +1,48 @@
+.button {
+	font-weight: 600;
+	padding: 1em 0.5em;
+	border-radius: 6px;
+
+	display: block;
+
+	margin: 0.75em 0;
+
+	color: white;
+	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+	border: none;
+	min-width: 12rem;
+	font-size: 18px;
+
+	&:hover {
+		cursor: pointer;
+	}
+
+	@media only screen and (max-width: 600px) {
+		width: 100%;
+	}
+
+	@media only screen and (min-width: 600px) {
+		font-size: unset;
+		width: unset;
+	}
+}
+
+.continue {
+	background-color: #00a323;
+	&::after {
+		content: "→";
+		display: inline;
+		margin-left: 4px;
+	}
+	&:hover {
+		background-color: #00861d;
+	}
+}
+.return {
+	background-color: #e80c0c;
+	&::before {
+		content: "←";
+		display: inline;
+		margin-right: 4px;
+	}
+}
