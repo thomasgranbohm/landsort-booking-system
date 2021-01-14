@@ -24,11 +24,11 @@ const Button: React.FC<Props> = ({
 		<button
 			{...props}
 			onClick={onClick}
-			className={joinClasses([
+			className={joinClasses(
 				[getClass("button"), true],
 				[getClass(customType), customType],
-				[className, className],
-			])}
+				[className, className]
+			)}
 		>
 			{value || children}
 		</button>

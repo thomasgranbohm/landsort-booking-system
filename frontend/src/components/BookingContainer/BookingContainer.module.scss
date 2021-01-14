@@ -1,0 +1,13 @@
+.bookings {
+	display: grid;
+	grid-template-areas: ".";
+	grid-template-columns: 1fr;
+	gap: 1em;
+}
+
+@media only screen and (min-width: 600px) {
+	.bookings {
+		grid-template-areas: ". .";
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

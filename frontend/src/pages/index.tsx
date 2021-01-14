@@ -1,0 +1,34 @@
+import { useRouter } from "next/dist/client/router";
+import DateForm from "../components/DateForm/DateForm";
+import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
+
+const Home = () => {
+	const router = useRouter();
+	const onSubmit = (start_date: Date, end_date: Date, link) => {
+		router.push({
+			pathname: link,
+			query: {
+				ankomstdatum: start_date.toISOString().substr(0, 10),
+				avresedatum: end_date.toISOString().substr(0, 10),
+			},
+		});
+	};
+
+	return (
+		<div>
+			<DateForm
+				buttonText={"Sök lediga sovplatser"}
+				formTitle={"Boka sängplats"}
+				onSubmit={(s, e) => onSubmit(s, e, "/")}
+			/>
+			<HorizontalRule />
+			<DateForm
+				buttonText={"Visa bokningar"}
+				formTitle={"Visa bokningsläget"}
+				onSubmit={(s, e) => onSubmit(s, e, "/bokningslaget")}
+			/>
+		</div>
+	);
+};
+
+export default Home;

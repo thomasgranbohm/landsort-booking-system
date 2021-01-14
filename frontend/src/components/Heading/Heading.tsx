@@ -1,5 +1,9 @@
+import getClassFunction from "../../functions/getClasses";
+import joinClasses from "../../functions/joinClasses";
 import { ClassNameProp } from "../types";
 import styles from "./Heading.module.scss";
+
+const getClass = getClassFunction(styles);
 
 type Props = {
 	title?: string;
@@ -15,9 +19,10 @@ const Heading: React.FC<Props> = ({
 	const HeadingElement = type;
 	return (
 		<HeadingElement
-			className={[styles["heading"], className]
-				.filter((v) => !!v)
-				.join(" ")}
+			className={joinClasses(
+				[getClass("heading"), true],
+				[className, className]
+			)}
 		>
 			{title || children}
 		</HeadingElement>

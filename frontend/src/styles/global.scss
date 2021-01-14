@@ -4,6 +4,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	font-family: "Inter";
 }
 
 body {
@@ -12,13 +13,5 @@ body {
 	margin: 0 auto;
 	padding: 0 2em;
 
-	font-family: "Inter";
 	font-size: 14px;
-}
-
-hr {
-	width: 100%;
-	height: 1px;
-	background-color: gray;
-	margin: 1.25em 0;
 }

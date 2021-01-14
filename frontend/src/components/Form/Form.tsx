@@ -1,7 +1,10 @@
 import React from "react";
+import getClassFunction from "../../functions/getClasses";
 import Button from "../Button/Button";
 import Heading from "../Heading/Heading";
 import styles from "./Form.module.scss";
+
+const getClass = getClassFunction(styles);
 
 type Props = {
 	method: "POST" | "GET";
@@ -18,7 +21,7 @@ const Form: React.FC<Props> = ({
 	children,
 }) => {
 	return (
-		<form className={styles["form"]} method={method} onSubmit={onSubmit}>
+		<form className={getClass("form")} method={method} onSubmit={onSubmit}>
 			<Heading type="h2">{title}</Heading>
 			{children}
 			<Button customType={"continue"}>{buttonText}</Button>

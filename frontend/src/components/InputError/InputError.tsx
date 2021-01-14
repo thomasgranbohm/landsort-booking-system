@@ -16,10 +16,10 @@ const InputError: FC<Props> = ({ text, children }) => {
 	}, [text]);
 	return (
 		<p
-			className={joinClasses([
+			className={joinClasses(
 				[getClasses("error"), true],
 				[getClasses("shown"), shown],
-			])}
+			)}
 		>
 			<b>Felmeddelande:</b> {text || children || "Unknown error."}
 		</p>

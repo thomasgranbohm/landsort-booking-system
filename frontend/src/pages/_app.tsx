@@ -1,7 +1,8 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import Header from "../src/components/Header/Header";
-import "../src/styles/global.scss";
+import Header from "../components/Header/Header";
+import PageTitle from "../components/PageTitle/PageTitle";
+import "../styles/global.scss";
 
 function CustomApp({ Component, pageProps }: AppProps) {
 	return (
@@ -12,8 +13,8 @@ function CustomApp({ Component, pageProps }: AppProps) {
 					name="viewport"
 					content="width=device-width, initial-scale=1.0"
 				/>
-				<title>Boka - Landort Fågelstation</title>
 			</Head>
+			<PageTitle />
 			<Header />
 			<Component {...pageProps} />
 		</>

@@ -1,14 +1,20 @@
+import Link from "next/link";
+import getClassFunction from "../../functions/getClasses";
 import Heading from "../Heading/Heading";
 import styles from "./Header.module.scss";
 
+const getClass = getClassFunction(styles);
+
 const Header = () => {
 	return (
-		<header className={styles["header"]}>
-			<img
-				className={styles["logo"]}
-				src="/images/logo-bara-fagel.png"
-				alt="Logo"
-			/>
+		<header className={getClass("header")}>
+			<Link href="http://localhost:3000">
+				<img
+					className={getClass("logo")}
+					src="/images/logo-bara-fagel.png"
+					alt="Logo"
+				/>
+			</Link>
 			<Heading type="h1">Landsort Fågelstation</Heading>
 		</header>
 	);

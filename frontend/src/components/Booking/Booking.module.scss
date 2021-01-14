@@ -1,0 +1,41 @@
+.booking {
+	padding: 1em;
+	border: 1px solid gray;
+	border-radius: 6px;
+
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-areas: "name name" "room arrival" "bunk departure";
+	gap: 0.5em;
+	p {
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+
+		b {
+			display: inline-block;
+			min-width: 3em;
+		}
+	}
+}
+.name {
+	font-size: 16px;
+	grid-area: name;
+	margin: 0;
+}
+.room {
+	grid-area: room;
+}
+.bunk {
+	grid-area: bunk;
+}
+.arrival {
+	grid-area: arrival;
+}
+.departure {
+	grid-area: departure;
+}
+.date b {
+	// TODO: Should not use !important
+	min-width: 9em !important;
+}
