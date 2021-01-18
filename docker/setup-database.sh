@@ -22,6 +22,6 @@ curl localhost:8080/api/users -X POST -d "email=sven.svensson@exempel.se&firstna
 
 # Bookings
 curl localhost:8080/api/bookings -X POST -H "Content-Type: application/json" --data-raw '{"bunks":[2, 4, 6], "start_date": "2021-01-01", "end_date": "2021-01-06", "user_email": "thomas@granbohm.dev"}'
-curl localhost:8080/api/bookings -X POST -H "Content-Type: application/json" --data-raw '{"bunks":[3], "start_date": "2021-01-02", "end_date": "2021-01-04", "user_email": "sven.svensson@exempel.se"}'
+curl localhost:8080/api/bookings -X POST -H "Content-Type: application/json" --data-raw '{"bunks":[7], "start_date": "2021-01-04", "end_date": "2021-01-08", "user_email": "sven.svensson@exempel.se"}'
 
 echo "";

@@ -3,7 +3,7 @@
 ## Requirements for the users
  - [ ] Booking and cancellation of bunk
  - [ ] Confirmation and cancellation by mail
- - [ ] See already booked days and bunks
+ - [X] See already booked days and bunks
  - [ ] See the total price of highlighted days
  - [ ] Reminder a week before booked date
 

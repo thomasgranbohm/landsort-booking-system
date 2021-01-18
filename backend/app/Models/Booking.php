@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Booking extends Model
 {
@@ -16,6 +17,19 @@ class Booking extends Model
 		"bunks",
 		"user_id"
 	];
+
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::creating(function ($booking) {
+			if (!$booking->getKey()) {
+				$booking->{$booking->getKeyName()} = (string) Str::uuid();
+			}
+			$booking->confirmation_token = (string) Str::uuid();
+			$booking->cancellation_token = (string) Str::uuid();
+		});
+	}
 
 	public function user()
 	{

@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator as Validator;
 
@@ -62,12 +63,6 @@ class BookingController extends Controller
 			]
 		);
 
-
-		return array(
-			"errors" => $validator
-				->errors()
-		);
-
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
 		$end_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['end_date'])));
 
@@ -83,10 +78,13 @@ class BookingController extends Controller
 		$availableBunks = getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
 
 
-		return array(
-			"errors" => $validator
-				->errors()
-		);
+		if ($validator->errors()->isNotEmpty()) {
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
+		}
 
 		return $availableBunks;
 	}
@@ -196,15 +194,19 @@ class BookingController extends Controller
 
 	// }
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Models\Booking  $booking
-	 * @return \Illuminate\Http\Response
-	 */
-	public function destroy(Booking $booking)
+	public function cancel($cancellation_token)
 	{
-		// curl localhost:8080/api/booking/{uuid} -X DELETE
-		return $booking->delete();
+		try {
+			$booking = Booking::with("bunks:id,location,room_id", "bunks.room:id,location", "user:id,firstname,lastname")
+				->where("cancellation_token", $cancellation_token)
+				->select(["id", "start_date", "end_date", "user_id"])
+				->firstOrFail();
+			if (isset($_GET["noCancel"])) {
+				return response(array("booking" => $booking), 200);
+			}
+			return $booking->delete();
+		} catch (ModelNotFoundException $ex) {
+			return response(array("errors" => array("booking" => "Could not find a booking with that cancellation token.")));
+		};
 	}
 }

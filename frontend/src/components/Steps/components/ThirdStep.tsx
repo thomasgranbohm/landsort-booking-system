@@ -1,4 +1,6 @@
+import { useRouter } from "next/dist/client/router";
 import Booking from "../../Booking/Booking";
+import Button from "../../Button/Button";
 import Heading from "../../Heading/Heading";
 import { APITypes } from "../../types";
 
@@ -7,7 +9,7 @@ type Props = {
 };
 
 const ThirdStep = ({ booking }: Props) => {
-	console.log(booking);
+	const router = useRouter();
 	return (
 		<div>
 			<Heading type="h2">
@@ -16,6 +18,9 @@ const ThirdStep = ({ booking }: Props) => {
 					: "Din plats är nu bokad!"}
 			</Heading>
 			<Booking booking={booking} />
+			<Button onClick={() => router.push("/")}>
+				Tillbaka till start.
+			</Button>
 		</div>
 	);
 };

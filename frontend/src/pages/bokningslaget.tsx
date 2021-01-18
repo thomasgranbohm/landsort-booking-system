@@ -6,18 +6,20 @@ import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { APITypes } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
+import makeAPIRequest from "../functions/makeAPIRequest";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { query } = context;
 	const { ankomstdatum: start_date, avresedatum: end_date } = query;
 
-	const resp = await fetch(
-		`${process.env.API_URL}/api/bookings?${createGetParameters({
+	const bookings = await makeAPIRequest(
+		`/bookings?${createGetParameters({
 			start_date,
 			end_date,
 		})}`
 	);
-	const bookings: APITypes.Booking[] = await resp.json();
+
+	console.log(bookings);
 
 	return {
 		props: {
@@ -36,7 +38,6 @@ type Props = {
 
 const Bokningsläget = (props: Props) => {
 	const { bookings, start_date, end_date } = props;
-	console.log(bookings);
 	return (
 		<div>
 			<PageTitle>Bokningsläget</PageTitle>

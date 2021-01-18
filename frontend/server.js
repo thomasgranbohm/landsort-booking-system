@@ -38,6 +38,10 @@ app.prepare().then(() => {
 			const validDates = checkDates(searchParams);
 			if (!validDates) res.redirect("/");
 			else app.render(req, res, "/boka", req.query);
+		} else if (pathname === "/avboka") {
+			const cancellationToken = searchParams.get("avboknings_id");
+			if (!cancellationToken) res.redirect("/");
+			else app.render(req, res, "/avboka", req.query);
 		} else {
 			handle(req, res);
 		}

@@ -26,7 +26,9 @@ Route::apiResource('users', UserController::class)
 		'destroy'
 	]);
 
+Route::get('/bookings/cancel/{cancellation_token}', [BookingController::class, "cancel"]);
 Route::apiResource('bookings', BookingController::class)
 	->except([
-		'update'
+		'update',
+		'destroy'
 	]);

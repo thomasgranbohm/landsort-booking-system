@@ -8,18 +8,18 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import Steps from "../components/Steps/Steps";
 import { APITypes } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
+import makeAPIRequest from "../functions/makeAPIRequest";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { query } = context;
 	const { ankomstdatum: start_date, avresedatum: end_date } = query;
 
-	const resp = await fetch(
-		`${process.env.API_URL}/api/bunks/available?${createGetParameters({
+	const bunks = await makeAPIRequest(
+		`/bunks/available?${createGetParameters({
 			start_date,
 			end_date,
 		})}`
 	);
-	const bunks: APITypes.Bunk[] = await resp.json();
 
 	return {
 		props: {

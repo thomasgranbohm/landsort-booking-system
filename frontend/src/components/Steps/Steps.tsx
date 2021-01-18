@@ -23,7 +23,6 @@ const Steps = ({ rooms, dates }: Props) => {
 	const [selectedBunks, setSelectedBunks] = useState<APITypes.Bunk[]>(
 		undefined
 	);
-	const [selectedUsers, setSelectedUsers] = useState();
 	const [nextData, setNextData] = useState<any>(undefined);
 
 	return (
@@ -34,8 +33,8 @@ const Steps = ({ rooms, dates }: Props) => {
 					rooms={rooms}
 					setSelectedBunks={setSelectedBunks}
 					nextStep={(data) => {
-						setStep(2);
 						if (data) setNextData(data);
+						setStep(2);
 					}}
 				/>
 			)}
@@ -44,8 +43,8 @@ const Steps = ({ rooms, dates }: Props) => {
 					{...dates}
 					selectedBunks={selectedBunks}
 					nextStep={(data) => {
-						setStep(3);
 						if (data) setNextData(data);
+						setStep(3);
 					}}
 				/>
 			)}

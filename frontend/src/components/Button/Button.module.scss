@@ -25,6 +25,11 @@
 		font-size: unset;
 		width: unset;
 	}
+	background-color: #cc662e;
+	&:hover {
+		text-decoration: underline;
+		background-color: #a15125;
+	}
 }
 
 .continue {

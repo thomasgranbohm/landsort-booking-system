@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class CreateBookingsTable extends Migration
 {
@@ -23,8 +24,8 @@ class CreateBookingsTable extends Migration
 				->references('id')
 				->on('users');
 
-			// $table->uuid("confirmation_token");
-			// $table->uuid("cancellation_token");
+			$table->uuid("confirmation_token")->default(Str::uuid());
+			$table->uuid("cancellation_token")->default(Str::uuid());;
 
 			$table->timestamps();
 		});

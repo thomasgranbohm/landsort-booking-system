@@ -64,9 +64,8 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 				});
 				const { errors, booking } = await resp.json();
 				if (errors) {
-					console.log(errors);
+					console.error(errors);
 				} else {
-					console.log(booking as APITypes.Booking);
 					nextStep(booking);
 				}
 			}}
