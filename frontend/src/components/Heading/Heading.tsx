@@ -1,13 +1,14 @@
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
-import { ClassNameProp } from "../types";
+import { ClassNameProp, HeadingTypes } from "../types";
 import styles from "./Heading.module.scss";
 
 const getClass = getClassFunction(styles);
 
 type Props = {
 	title?: string;
-	type?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "b";
+	type?: HeadingTypes;
+	noMargin?: boolean;
 } & ClassNameProp;
 
 const Heading: React.FC<Props> = ({
@@ -15,12 +16,14 @@ const Heading: React.FC<Props> = ({
 	title,
 	children,
 	className,
+	noMargin,
 }) => {
 	const HeadingElement = type;
 	return (
 		<HeadingElement
 			className={joinClasses(
 				[getClass("heading"), true],
+				[getClass("no-margin"), noMargin],
 				[className, className]
 			)}
 		>

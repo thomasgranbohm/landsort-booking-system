@@ -3,7 +3,7 @@ import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
 import styles from "./InputError.module.scss";
 
-const getClasses = getClassFunction(styles);
+const getClass = getClassFunction(styles);
 
 type Props = {
 	text?: string;
@@ -17,8 +17,8 @@ const InputError: FC<Props> = ({ text, children }) => {
 	return (
 		<p
 			className={joinClasses(
-				[getClasses("error"), true],
-				[getClasses("shown"), shown],
+				[getClass("error"), true],
+				[getClass("shown"), shown]
 			)}
 		>
 			<b>Felmeddelande:</b> {text || children || "Unknown error."}

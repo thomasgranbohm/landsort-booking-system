@@ -40,9 +40,11 @@ class UserController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		return User::create($validator->validated())
@@ -82,9 +84,11 @@ class UserController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		return $user->update($validator->validated());

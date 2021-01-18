@@ -13,7 +13,7 @@ class Booking extends Model
 	protected $fillable = [
 		"start_date",
 		"end_date",
-		"bunk_id",
+		"bunks",
 		"user_id"
 	];
 
@@ -22,8 +22,8 @@ class Booking extends Model
 		return $this->belongsTo("App\Models\User");
 	}
 
-	public function bunk()
+	public function bunks()
 	{
-		return $this->belongsTo("App\Models\Bunk");
+		return $this->belongsToMany("App\Models\Bunk");
 	}
 }

@@ -19,7 +19,7 @@ const Home = () => {
 			<DateForm
 				buttonText={"Sök lediga sovplatser"}
 				formTitle={"Boka sängplats"}
-				onSubmit={(s, e) => onSubmit(s, e, "/")}
+				onSubmit={(s, e) => onSubmit(s, e, "/boka")}
 			/>
 			<HorizontalRule />
 			<DateForm

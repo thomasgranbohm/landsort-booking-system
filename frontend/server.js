@@ -2,13 +2,20 @@ const express = require("express");
 const next = require("next");
 const { isNil } = require("ramda");
 
-// import express from "express";
-// import next from "next";
-// import { isNil } from "ramda";
-
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
+
+const checkDates = (searchParams) => {
+	const getankomstdatum = searchParams.get("ankomstdatum");
+	const getavresedatum = searchParams.get("avresedatum");
+	if (!getankomstdatum || !getavresedatum) return false;
+
+	const start_date = new Date(getankomstdatum);
+	const end_date = new Date(getavresedatum);
+	if (isNil(start_date) || isNil(end_date)) return false;
+	return true;
+};
 
 app.prepare().then(() => {
 	const server = express();
@@ -24,16 +31,13 @@ app.prepare().then(() => {
 			pathname === "/bokningsl%C3%A4get" ||
 			pathname === "/bokningslaget"
 		) {
-			const getankomstdatum = searchParams.get("ankomstdatum");
-			const getavresedatum = searchParams.get("avresedatum");
-			if (!getankomstdatum || !getavresedatum) res.redirect("/");
-
-			const start_date = new Date(getankomstdatum);
-			const end_date = new Date(getavresedatum);
-			if (isNil(start_date) || isNil(end_date)) res.redirect("/");
-			else {
-				app.render(req, res, "/bokningslaget", req.query);
-			}
+			const validDates = checkDates(searchParams);
+			if (!validDates) res.redirect("/");
+			else app.render(req, res, "/bokningslaget", req.query);
+		} else if (pathname === "/boka") {
+			const validDates = checkDates(searchParams);
+			if (!validDates) res.redirect("/");
+			else app.render(req, res, "/boka", req.query);
 		} else {
 			handle(req, res);
 		}

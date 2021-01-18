@@ -10,6 +10,7 @@ const Header = () => {
 		<header className={getClass("header")}>
 			<Link href="http://localhost:3000">
 				<img
+					title="Landsort Fågelstation "
 					className={getClass("logo")}
 					src="/images/logo-bara-fagel.png"
 					alt="Logo"

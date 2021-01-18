@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import Bookings from "../components/BookingContainer/BookingContainer";
+import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
 import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import PageTitle from "../components/PageTitle/PageTitle";
@@ -11,13 +12,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	const { ankomstdatum: start_date, avresedatum: end_date } = query;
 
 	const resp = await fetch(
-		`http://localhost:8080/api/bookings?${createGetParameters({
+		`${process.env.API_URL}/api/bookings?${createGetParameters({
 			start_date,
 			end_date,
 		})}`
 	);
 	const bookings: APITypes.Booking[] = await resp.json();
-	console.log(start_date, end_date);
 
 	return {
 		props: {
@@ -36,17 +36,16 @@ type Props = {
 
 const Bokningsläget = (props: Props) => {
 	const { bookings, start_date, end_date } = props;
+	console.log(bookings);
 	return (
-		<>
+		<div>
 			<PageTitle>Bokningsläget</PageTitle>
 			<HorizontalRule />
-			{start_date} {end_date}
+			<DateRangeHeader arrival={start_date} departure={end_date} />
 			<HorizontalRule />
-			<div>
-				<Heading type="h2">Bokade platser</Heading>
-				<Bookings bookings={bookings} />
-			</div>
-		</>
+			<Heading type="h2">Bokade platser</Heading>
+			<Bookings bookings={bookings} />
+		</div>
 	);
 };
 

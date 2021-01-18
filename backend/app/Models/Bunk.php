@@ -18,6 +18,6 @@ class Bunk extends Model
 
 	public function bookings()
 	{
-		return $this->hasMany("App\Models\Booking");
+		return $this->belongsToMany("App\Models\Booking");
 	}
 }

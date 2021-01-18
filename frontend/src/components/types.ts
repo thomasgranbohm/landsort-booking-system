@@ -1,9 +1,23 @@
+import { MutableRefObject } from "react";
+
 export type AnyProps = {
 	[key: string]: any;
 };
 
 export type ClassNameProp = {
 	className?: string;
+};
+
+export type HeadingTypes = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "b";
+
+export type UserInputRefs = {
+	firstname: MutableRefObject<HTMLInputElement>;
+	lastname: MutableRefObject<HTMLInputElement>;
+};
+
+export type Dates = {
+	arrival: string;
+	departure: string;
 };
 
 export declare module APITypes {
@@ -36,11 +50,10 @@ export declare module APITypes {
 		id: string;
 		start_date: string;
 		end_date: string;
-		bunk_id: number;
 		user_id: string;
 		created_at: Date;
 		updated_at: Date;
-		bunk: Bunk;
+		bunks: Bunk[];
 		user: User;
 	}
 }

@@ -14,7 +14,7 @@ class CreateBunksTable extends Migration
 	public function up()
 	{
 		Schema::create('bunks', function (Blueprint $table) {
-			$table->id();
+			$table->bigIncrements('id');
 			$table->string('location');
 			$table->unsignedBigInteger('room_id');
 			$table->foreign('room_id')

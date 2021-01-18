@@ -7,13 +7,20 @@ const getClass = getClassFunction(styles);
 type Props = {
 	forInput: string;
 	label: string;
+	bold?: boolean;
 };
 
-const InputWithLabel: React.FC<Props> = ({ label, forInput, children }) => {
+const InputWithLabel: React.FC<Props> = ({
+	label,
+	forInput,
+	children,
+	bold,
+}) => {
+	const newLabel = label.indexOf(":") !== -1 ? label : `${label}:`;
 	return (
 		<div className={getClass("container")}>
 			<label className={getClass("label")} htmlFor={forInput}>
-				{label.indexOf(":") !== -1 ? label : `${label}:`}
+				{bold ? <b>{newLabel}</b> : newLabel}
 			</label>
 			{children}
 		</div>

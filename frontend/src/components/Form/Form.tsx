@@ -7,7 +7,7 @@ import styles from "./Form.module.scss";
 const getClass = getClassFunction(styles);
 
 type Props = {
-	method: "POST" | "GET";
+	method?: "POST" | "GET";
 	onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 	title: string;
 	buttonText: string;
@@ -20,12 +20,25 @@ const Form: React.FC<Props> = ({
 	title,
 	children,
 }) => {
+	const formId = "form-" + title.split(" ").join("-");
 	return (
-		<form className={getClass("form")} method={method} onSubmit={onSubmit}>
+		<>
 			<Heading type="h2">{title}</Heading>
-			{children}
-			<Button customType={"continue"}>{buttonText}</Button>
-		</form>
+			<form
+				id={formId}
+				className={getClass("form")}
+				method={method}
+				onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+					if (method === undefined) e.preventDefault();
+					onSubmit(e);
+				}}
+			>
+				{children}
+			</form>
+			<Button form={formId} customType={"continue"}>
+				{buttonText}
+			</Button>
+		</>
 	);
 };
 

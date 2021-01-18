@@ -2,10 +2,13 @@
 	padding: 1em;
 	border: 1px solid gray;
 	border-radius: 6px;
+}
 
+.bookedspace {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	grid-template-areas: "name name" "room arrival" "bunk departure";
+	grid-template-areas: "room arrival" "bunk departure";
+	align-items: center;
 	gap: 0.5em;
 	p {
 		display: flex;
@@ -17,11 +20,13 @@
 			min-width: 3em;
 		}
 	}
+	margin: 0.5em 0;
 }
 .name {
 	font-size: 16px;
 	grid-area: name;
 	margin: 0;
+	margin-bottom: 1em;
 }
 .room {
 	grid-area: room;

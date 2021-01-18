@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-/* 
+/*
  * Verb 		URI 						Action 		Route Name
  * GET 			/rooms/{room}/bunks 		index 		rooms.bunks.index
  * POST 		/rooms/{room}/bunks 		store 		rooms.bunks.store
@@ -29,7 +29,7 @@ class BunkController extends Controller
 	public function index(Room $room)
 	{
 		// curl localhost:8080/api/rooms/1/bunks
-		return Room::with('bunks', 'bunks.bookings')
+		return Room::with('bunks:id,location,room_id', 'bunks.bookings:id,start_date,end_date,user_id', 'bunks.bookings.user:id,firstname,lastname')
 			->find($room->id)
 			->bunks;
 	}
@@ -62,9 +62,11 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		return Bunk::create($validator->validated())
@@ -83,9 +85,11 @@ class BunkController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
@@ -115,9 +119,11 @@ class BunkController extends Controller
 			)->get();
 
 		if ($validator->errors()->isNotEmpty()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		return $availableBunks;
@@ -141,9 +147,11 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return $validator
-				->errors()
-				->toJson();
+			return response(array(
+				"errors" => $validator
+					->errors()
+			), 400)
+				->header('Content-Type', 'application/json');
 		}
 
 		$location = $validator
@@ -155,10 +163,11 @@ class BunkController extends Controller
 			->first();
 
 		if ($bunkWithLocation) {
-			return $validator
-				->errors()
-				->add("location", "That location already exists in this room.")
-				->toJson();
+			return array(
+				"errors" => $validator
+					->errors()
+					->add("location", "That location already exists in this room.")
+			);
 		}
 		$bunk->location = $location;
 		return $bunk->save();

@@ -15,6 +15,7 @@ Route::get('/', function () {
 	return "Hello, world!";
 });
 
+Route::get("/rooms/available", [RoomController::class, "available"]);
 Route::apiResource('rooms', RoomController::class);
 
 Route::get("/bunks/available", [BunkController::class, "available"]);
