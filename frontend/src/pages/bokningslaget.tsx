@@ -1,51 +1,82 @@
-import { GetServerSideProps } from "next";
+import axios from "axios";
+import { useRouter } from "next/dist/client/router";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import Bookings from "../components/BookingContainer/BookingContainer";
 import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
 import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
+import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import PageTitle from "../components/PageTitle/PageTitle";
-import { APITypes } from "../components/types";
+import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
-import makeAPIRequest from "../functions/makeAPIRequest";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { query } = context;
-	const { ankomstdatum: start_date, avresedatum: end_date } = query;
+const Bokningsläget: React.FC = () => {
+	const [bookings, setBookings] = useState<APITypes.Booking[]>(undefined);
+	const [dates, setDates] = useState<Dates>(undefined);
+	const [isLoading, setIsLoading] = useState<Boolean>(true);
+	const router = useRouter();
+	useEffect(() => {
+		const asyncFunction = async () => {
+			try {
+				const {
+					ankomstdatum: start_date,
+					avresedatum: end_date,
+				} = router.query;
 
-	const bookings = await makeAPIRequest(
-		`/bookings?${createGetParameters({
-			start_date,
-			end_date,
-		})}`
-	);
+				if (!start_date || !end_date) return;
 
-	console.log(bookings);
+				setIsLoading(true);
 
-	return {
-		props: {
-			bookings,
-			start_date: start_date || null,
-			end_date: end_date || null,
-		},
-	};
-};
+				const resp = await axios(
+					`http://localhost:8080/api/bookings?${createGetParameters({
+						start_date,
+						end_date,
+					})}`
+				);
+				const { bookings } = resp.data;
 
-type Props = {
-	bookings: APITypes.Booking[];
-	start_date: any | undefined;
-	end_date: any | undefined;
-};
+				setDates({
+					arrival: start_date as string,
+					departure: end_date as string,
+				});
+				setBookings(bookings as APITypes.Booking[]);
+				setIsLoading(false);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+		asyncFunction();
+	}, [router.query]);
 
-const Bokningsläget = (props: Props) => {
-	const { bookings, start_date, end_date } = props;
 	return (
 		<div>
 			<PageTitle>Bokningsläget</PageTitle>
 			<HorizontalRule />
-			<DateRangeHeader arrival={start_date} departure={end_date} />
-			<HorizontalRule />
-			<Heading type="h2">Bokade platser</Heading>
-			<Bookings bookings={bookings} />
+			{!isLoading ? (
+				<>
+					<DateRangeHeader
+						arrival={dates.arrival}
+						departure={dates.departure}
+					/>
+					<HorizontalRule />
+					{bookings.length !== 0 ? (
+						<>
+							<Heading type="h2">Bokade platser</Heading>
+							<Bookings bookings={bookings} />
+						</>
+					) : (
+						<>
+							<Heading type="h2">
+								Finns inga bokningar i intervallet.
+							</Heading>
+							<Link href="/">Tillbaka till start.</Link>
+						</>
+					)}
+				</>
+			) : (
+				<LoadingSpinner />
+			)}
 		</div>
 	);
 };

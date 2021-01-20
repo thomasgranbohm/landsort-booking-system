@@ -5,7 +5,9 @@
 	"scripts": {
 		"dev": "nodemon server.js",
 		"build": "next build",
-		"start": "node server.js"
+		"start": "node server.js",
+		"prod": "next build && next export",
+		"export": "next export"
 	},
 	"dependencies": {
 		"@types/node": "^14.14.20",

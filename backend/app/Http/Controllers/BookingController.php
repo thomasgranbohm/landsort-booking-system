@@ -75,8 +75,7 @@ class BookingController extends Controller
 		$dateAfterStart = date('Y-m-d', strtotime($start_date . " +1 day"));
 		$dateBeforeEnd = date('Y-m-d', strtotime($end_date . " -1 day"));
 
-		$availableBunks = getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
-
+		$bookings = getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
 
 		if ($validator->errors()->isNotEmpty()) {
 			return response(array(
@@ -86,7 +85,7 @@ class BookingController extends Controller
 				->header('Content-Type', 'application/json');
 		}
 
-		return $availableBunks;
+		return response(array("bookings" => $bookings), 200)->header('Content-Type', 'application/json');
 	}
 
 	/**

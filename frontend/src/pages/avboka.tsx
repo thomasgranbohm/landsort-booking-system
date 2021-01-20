@@ -7,21 +7,21 @@ import Heading from "../components/Heading/Heading";
 import { APITypes } from "../components/types";
 import makeAPIRequest from "../functions/makeAPIRequest";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-	const { query } = context;
-	const { avboknings_id: cancellation_token } = query;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+// 	const { query } = context;
+// 	const { avboknings_id: cancellation_token } = query;
 
-	const { booking } = await makeAPIRequest(
-		`/bookings/cancel/${cancellation_token}?noCancel`
-	);
+// 	const { booking } = await makeAPIRequest(
+// 		`/bookings/cancel/${cancellation_token}?noCancel`
+// 	);
 
-	return {
-		props: {
-			booking: (booking as APITypes.Booking) || null,
-			cancellation_token,
-		} as Props,
-	};
-};
+// 	return {
+// 		props: {
+// 			booking: (booking as APITypes.Booking) || null,
+// 			cancellation_token,
+// 		} as Props,
+// 	};
+// };
 
 type Props = {
 	booking: APITypes.Booking;
@@ -29,14 +29,14 @@ type Props = {
 };
 
 const Avboka = ({ cancellation_token, booking }: Props) => {
-	const router = useRouter();
-	useEffect(() => {
-		if (!booking) router.push("/");
-	}, []);
+	// const router = useRouter();
+	// useEffect(() => {
+	// 	if (!booking) router.push("/");
+	// }, []);
 	return (
 		<div>
 			<Heading type="h2">Vill du boka av bokningen:</Heading>
-			{booking && (
+			{/* {booking && (
 				<>
 					<Booking booking={booking} />
 					<Button
@@ -58,7 +58,7 @@ const Avboka = ({ cancellation_token, booking }: Props) => {
 						Boka av.
 					</Button>
 				</>
-			)}
+			)} */}
 		</div>
 	);
 };

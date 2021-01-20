@@ -126,7 +126,7 @@ class BunkController extends Controller
 				->header('Content-Type', 'application/json');
 		}
 
-		return $availableBunks;
+		return response(array("bunks" => $availableBunks), 200)->header('Content-Type', 'application/json');
 	}
 
 
