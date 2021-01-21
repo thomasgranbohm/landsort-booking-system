@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Bunk;
 use App\Models\Room;
 use Carbon\Carbon;
@@ -21,39 +22,20 @@ use Illuminate\Validation\Rule;
 
 class BunkController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
 	public function index(Room $room)
 	{
-		// curl localhost:8080/api/rooms/1/bunks
 		return Room::with('bunks:id,location,room_id', 'bunks.bookings:id,start_date,end_date,user_id', 'bunks.bookings.user:id,firstname,lastname')
 			->find($room->id)
 			->bunks;
 	}
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Models\Bunk  $bunk
-	 * @return \Illuminate\Http\Response
-	 */
+
 	public function show(Bunk $bunk)
 	{
-		// curl localhost:8080/api/bunks/1
 		return $bunk::where("id", $bunk->id)->with('room', 'bookings')->first();
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
 	public function store(Request $request, Room $room)
 	{
-		// curl localhost:8080/api/rooms/1/bunks -X POST -d "location=A"
 		$validator = Validator::make(
 			array_merge($request->all(), ["room_id" => $room->id]),
 			[
@@ -73,9 +55,9 @@ class BunkController extends Controller
 			->save();
 	}
 
-	// curl localhost:8080/api/bunks/available?start_date=2021-01-15&end_date=2021-01-17
 	public function available(Request $request)
 	{
+		$this->removeOutOfDate();
 		$validator = Validator::make(
 			$request->all(),
 			[
@@ -129,17 +111,8 @@ class BunkController extends Controller
 		return response(array("bunks" => $availableBunks), 200)->header('Content-Type', 'application/json');
 	}
 
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  \App\Models\Bunk  $bunk
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request, Bunk $bunk)
 	{
-		// curl localhost:8080/api/bunks/1 -X PUT -d "location=B"
 		$validator = Validator::make(
 			$request->all(),
 			[
@@ -173,15 +146,22 @@ class BunkController extends Controller
 		return $bunk->save();
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Models\Bunk  $bunk
-	 * @return \Illuminate\Http\Response
-	 */
 	public function destroy(Bunk $bunk)
 	{
-		// curl localhost:8080/api/bunks/2 -X DELETE
 		return $bunk->delete();
+	}
+
+	private function removeOutOfDate()
+	{
+		try {
+			foreach (Booking::where("confirmed", false)
+				->where('created_at', '<', now()->subMinutes(config('global.confirmation_period')))
+				->get() as $bunk) {
+				$bunk->delete();
+			}
+			return true;
+		} catch (\Throwable $th) {
+			return false;
+		}
 	}
 }

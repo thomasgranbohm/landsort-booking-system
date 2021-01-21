@@ -15,7 +15,8 @@ class Booking extends Model
 		"start_date",
 		"end_date",
 		"bunks",
-		"user_id"
+		"user_id",
+		"confirmed"
 	];
 
 	protected static function boot()
@@ -28,6 +29,7 @@ class Booking extends Model
 			}
 			$booking->confirmation_token = (string) Str::uuid();
 			$booking->cancellation_token = (string) Str::uuid();
+			$booking->confirmed = false;
 		});
 	}
 

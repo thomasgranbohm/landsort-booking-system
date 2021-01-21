@@ -21,11 +21,13 @@ Route::apiResource('rooms', RoomController::class);
 Route::get("/bunks/available", [BunkController::class, "available"]);
 Route::apiResource('rooms.bunks', BunkController::class)->shallow();
 
+Route::get("/users/email", [UserController::class, "email"]);
 Route::apiResource('users', UserController::class)
 	->except([
 		'destroy'
 	]);
 
+Route::get('/bookings/confirm/{confirmation_token}', [BookingController::class, "confirm"]);
 Route::get('/bookings/cancel/{cancellation_token}', [BookingController::class, "cancel"]);
 Route::apiResource('bookings', BookingController::class)
 	->except([

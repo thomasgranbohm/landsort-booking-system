@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmationMail;
+use App\Mail\TestMail;
+use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -61,6 +65,11 @@ class UserController extends Controller
 	{
 		//
 		return User::where('id', $user->id)->with('bookings')->first();
+	}
+
+	public function email()
+	{
+		return (new ConfirmationMail(Booking::find("4c041f1c-8915-460b-aab6-d0dba3468423")))->render();
 	}
 
 	/**

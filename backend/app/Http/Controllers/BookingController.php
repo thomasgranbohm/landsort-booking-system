@@ -2,57 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ConfirmationMail;
 use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator as Validator;
-
-function getBookingsInRange(
-	$start_date,
-	$end_date,
-	$dateBeforeEnd,
-	$dateAfterStart,
-	$bunks = null
-) {
-	$base = Booking::with(
-		"user:id,firstname,lastname,email",
-		"bunks:id,location,room_id",
-		"bunks.room:id,location"
-	);
-
-
-	if ($bunks != null) {
-		$base
-			->whereHas('bunks', function (Builder $builder) use ($bunks) {
-				$builder->whereIn("bunk_id", $bunks);
-			});
-	}
-
-	return $base
-		->where(function ($query) use ($start_date, $end_date, $dateAfterStart, $dateBeforeEnd) {
-			$query->where([
-				["start_date", "<=", $start_date],
-				["end_date", ">=", $end_date]
-			])
-				->orWhereBetween("start_date", [$start_date, $dateBeforeEnd])
-				->orWhereBetween("end_date", [$dateAfterStart, $end_date]);
-		})
-		->get();
-}
 
 class BookingController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
 	public function index(Request $request)
 	{
 		// curl localhost:8080/api/bookings/
+
+		$this->removeOutOfDate();
 		if (count($request->all()) === 0) return Booking::with(['bunks', 'user'])->get();
 
 		$validator = Validator::make(
@@ -75,7 +41,7 @@ class BookingController extends Controller
 		$dateAfterStart = date('Y-m-d', strtotime($start_date . " +1 day"));
 		$dateBeforeEnd = date('Y-m-d', strtotime($end_date . " -1 day"));
 
-		$bookings = getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
+		$bookings = $this->getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
 
 		if ($validator->errors()->isNotEmpty()) {
 			return response(array(
@@ -88,12 +54,6 @@ class BookingController extends Controller
 		return response(array("bookings" => $bookings), 200)->header('Content-Type', 'application/json');
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
 	public function store(Request $request)
 	{
 		// curl localhost:8080/api/bookings/ -X POST -d "bunk_id=1&start_date=2021-01-01&end_date=2021-01-15&user_email=thomas@granbohm.dev"
@@ -117,7 +77,7 @@ class BookingController extends Controller
 		}
 
 		$bunks = $validator->validated()['bunks'];
-		$user_email = $validator->validated()['user_email'];
+		$user_email = strtolower(trim($validator->validated()['user_email']));
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
 		$end_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['end_date'])));
 
@@ -132,7 +92,7 @@ class BookingController extends Controller
 		$dateAfterStart = date('Y-m-d', strtotime($start_date . " +1 day"));
 		$dateBeforeEnd = date('Y-m-d', strtotime($end_date . " -1 day"));
 
-		$bookingsInRange = getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart, $bunks);
+		$bookingsInRange = $this->getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart, $bunks);
 
 		if (count($bookingsInRange) !== 0) {
 			$validator
@@ -153,8 +113,11 @@ class BookingController extends Controller
 			"end_date" => $end_date,
 			"user_id" => $user->id
 		]);
+		$booking_id = $booking->id;
 		$booking->bunks()->sync($bunks);
+		Mail::to($user_email)->send(new ConfirmationMail(Booking::find($booking_id)));
 		$booking->save();
+
 		return response(
 			array(
 				"booking" => Booking::where("id", $booking->id)
@@ -166,32 +129,25 @@ class BookingController extends Controller
 			->header('Content-Type', 'application/json');
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Models\Booking  $booking
-	 * @return \Illuminate\Http\Response
-	 */
 	public function show(Booking $booking)
 	{
-		// curl localhost:8080/api/booking/{uuid}
+		$this->removeOutOfDate();
 		return Booking::where('id', $booking->id)
 			->with(['bunks:id,location,room_id', 'user:id,firstname,lastname,email,phonenumber', 'bunks.room:id,location'])
 			->first(['id', 'start_date', 'end_date', 'user_id']);
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  \App\Models\Booking  $booking
-	 * @return \Illuminate\Http\Response
-	 */
-
-	// public function update(Request $request, Booking $booking)
-	// {
-
-	// }
+	public function confirm($confirmation_token)
+	{
+		try {
+			$booking = Booking::where("confirmation_token", $confirmation_token)->firstOrFail();
+			$booking->confirmed = true;
+			return $booking->save();
+		} catch (ModelNotFoundException $ex) {
+			return response()
+				->json(array("errors" => array("booking" => "Could not find booking with that confirmation token.")));
+		}
+	}
 
 	public function cancel($cancellation_token)
 	{
@@ -205,7 +161,56 @@ class BookingController extends Controller
 			}
 			return $booking->delete();
 		} catch (ModelNotFoundException $ex) {
-			return response(array("errors" => array("booking" => "Could not find a booking with that cancellation token.")));
+			return response()
+				->json(array("errors" => array("booking" => "Could not find a booking with that cancellation token.")));
 		};
+	}
+
+	private function removeOutOfDate()
+	{
+		try {
+			foreach (Booking::where("confirmed", false)
+				->where('created_at', '<', now()->subMinutes(config('global.confirmation_period')))
+				->get() as $bunk) {
+				$bunk->delete();
+			}
+			return true;
+		} catch (\Throwable $th) {
+			return false;
+		}
+	}
+
+
+	private function getBookingsInRange(
+		$start_date,
+		$end_date,
+		$dateBeforeEnd,
+		$dateAfterStart,
+		$bunks = null
+	) {
+		$base = Booking::with(
+			"user:id,firstname,lastname,email",
+			"bunks:id,location,room_id",
+			"bunks.room:id,location"
+		);
+
+
+		if ($bunks != null) {
+			$base
+				->whereHas('bunks', function (Builder $builder) use ($bunks) {
+					$builder->whereIn("bunk_id", $bunks);
+				});
+		}
+
+		return $base
+			->where(function ($query) use ($start_date, $end_date, $dateAfterStart, $dateBeforeEnd) {
+				$query->where([
+					["start_date", "<=", $start_date],
+					["end_date", ">=", $end_date]
+				])
+					->orWhereBetween("start_date", [$start_date, $dateBeforeEnd])
+					->orWhereBetween("end_date", [$dateAfterStart, $end_date]);
+			})
+			->get();
 	}
 }
