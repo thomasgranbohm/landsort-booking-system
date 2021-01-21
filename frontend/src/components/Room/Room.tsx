@@ -10,14 +10,11 @@ type Props = APITypes.Room;
 const Room = ({ id, location, bunks }: Props) => {
 	const Bunks = () => {
 		const Bunk = (bunk: APITypes.Bunk) => {
+			const combinedId = `${id}-${bunk.id}`;
 			return (
 				<div className={getClass("bunk")}>
-					<input
-						type="checkbox"
-						name={`${id}-${bunk.id}`}
-						id={bunk.location}
-					/>
-					<label htmlFor={bunk.location}>
+					<input type="checkbox" name={combinedId} id={combinedId} />
+					<label htmlFor={combinedId}>
 						<b>Plats:</b> {bunk.location}
 					</label>
 				</div>

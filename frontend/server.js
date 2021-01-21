@@ -6,6 +6,8 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+require("dotenv").config();
+
 const checkDates = (searchParams) => {
 	const getankomstdatum = searchParams.get("ankomstdatum");
 	const getavresedatum = searchParams.get("avresedatum");
