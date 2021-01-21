@@ -5,4 +5,5 @@ module.exports = {
 		APP_URL,
 		API_URL,
 	},
+	trailingSlash: true,
 };
