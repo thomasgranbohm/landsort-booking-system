@@ -201,7 +201,7 @@ class BookingController extends Controller
 				->select(["id", "start_date", "end_date", "user_id"])
 				->firstOrFail();
 			if (isset($_GET["noCancel"])) {
-				return response(array("booking" => $booking), 200);
+				return response()->json(["booking" => $booking]);
 			}
 			return $booking->delete();
 		} catch (ModelNotFoundException $ex) {

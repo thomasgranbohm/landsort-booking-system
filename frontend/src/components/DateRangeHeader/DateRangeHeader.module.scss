@@ -1,4 +1,18 @@
-.heading {
+.container {
 	width: 100%;
 	text-align: center;
+}
+
+.container.noCenter {
+	text-align: start;
+	.heading p {
+		display: inline-block;
+		min-width: 8em;
+	}
+}
+
+.heading {
+	span {
+		font-weight: normal;
+	}
 }

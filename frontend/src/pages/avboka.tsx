@@ -1,48 +1,52 @@
-import { GetServerSideProps } from "next";
+import axios from "axios";
 import { useRouter } from "next/dist/client/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Booking from "../components/Booking/Booking";
 import Button from "../components/Button/Button";
 import Heading from "../components/Heading/Heading";
+import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { APITypes } from "../components/types";
-import makeAPIRequest from "../functions/makeAPIRequest";
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-// 	const { query } = context;
-// 	const { avboknings_id: cancellation_token } = query;
+const Avboka = () => {
+	const router = useRouter();
+	const [booking, setBooking] = useState<APITypes.Booking>(undefined);
+	const [cancellationId, setCancellationid] = useState<string>(undefined);
+	const [isLoading, setIsLoading] = useState<Boolean>(true);
 
-// 	const { booking } = await makeAPIRequest(
-// 		`/bookings/cancel/${cancellation_token}?noCancel`
-// 	);
+	useEffect(() => {
+		const asyncFunction = async () => {
+			try {
+				const { avbokningsid: cancellation_token } = router.query;
 
-// 	return {
-// 		props: {
-// 			booking: (booking as APITypes.Booking) || null,
-// 			cancellation_token,
-// 		} as Props,
-// 	};
-// };
+				if (!cancellation_token) return;
 
-type Props = {
-	booking: APITypes.Booking;
-	cancellation_token: string;
-};
+				setIsLoading(true);
+				const resp = await axios(
+					`http://${process.env.API_URL}/bookings/cancel/${cancellation_token}?noCancel`
+				);
+				const { booking } = resp.data;
 
-const Avboka = ({ cancellation_token, booking }: Props) => {
-	// const router = useRouter();
-	// useEffect(() => {
-	// 	if (!booking) router.push("/");
-	// }, []);
+				setBooking(booking);
+				setCancellationid(cancellation_token as string);
+				setIsLoading(false);
+			} catch (error) {
+				console.error(error);
+				alert(error.message);
+			}
+		};
+		asyncFunction();
+	}, [router.query]);
+
 	return (
-		<div>
-			<Heading type="h2">Vill du boka av bokningen:</Heading>
-			{/* {booking && (
+		<main>
+			{!isLoading && booking ? (
 				<>
+					<Heading type="h2">Vill du boka av bokningen:</Heading>
 					<Booking booking={booking} />
 					<Button
 						onClick={async () => {
 							const resp = await fetch(
-								`localhost:8080/api/bookings/cancel/${cancellation_token}`
+								`http://${process.env.API_URL}/api/bookings/cancel/${cancellationId}`
 							);
 							const json = await resp.json();
 							if (json.errors) {
@@ -58,8 +62,10 @@ const Avboka = ({ cancellation_token, booking }: Props) => {
 						Boka av.
 					</Button>
 				</>
-			)} */}
-		</div>
+			) : (
+				<LoadingSpinner />
+			)}
+		</main>
 	);
 };
 

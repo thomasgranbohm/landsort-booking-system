@@ -12,10 +12,11 @@ import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
 
 const Bokningsläget: React.FC = () => {
-	const [bookings, setBookings] = useState<APITypes.Booking[]>(undefined);
+	const router = useRouter();
+
+	const [bookings, setBookings] = useState<APITypes.Booking[]>([]);
 	const [dates, setDates] = useState<Dates>(undefined);
 	const [isLoading, setIsLoading] = useState<Boolean>(true);
-	const router = useRouter();
 	useEffect(() => {
 		const asyncFunction = async () => {
 			try {
@@ -29,7 +30,9 @@ const Bokningsläget: React.FC = () => {
 				setIsLoading(true);
 
 				const resp = await axios(
-					`http://localhost:8080/api/bookings?${createGetParameters({
+					`http://${
+						process.env.API_URL
+					}/bookings?${createGetParameters({
 						start_date,
 						end_date,
 					})}`
@@ -44,13 +47,14 @@ const Bokningsläget: React.FC = () => {
 				setIsLoading(false);
 			} catch (error) {
 				console.error(error);
+				alert(error.message);
 			}
 		};
 		asyncFunction();
 	}, [router.query]);
 
 	return (
-		<div>
+		<main>
 			<PageTitle>Bokningsläget</PageTitle>
 			<HorizontalRule />
 			{!isLoading ? (
@@ -60,7 +64,7 @@ const Bokningsläget: React.FC = () => {
 						departure={dates.departure}
 					/>
 					<HorizontalRule />
-					{bookings.length !== 0 ? (
+					{bookings && bookings.length > 0 ? (
 						<>
 							<Heading type="h2">Bokade platser</Heading>
 							<Bookings bookings={bookings} />
@@ -77,7 +81,7 @@ const Bokningsläget: React.FC = () => {
 			) : (
 				<LoadingSpinner />
 			)}
-		</div>
+		</main>
 	);
 };
 

@@ -8,15 +8,19 @@ const getClass = getClassFunction(styles);
 const Header = () => {
 	return (
 		<header className={getClass("header")}>
-			<Link href="http://localhost:3000">
+			<Link href={`http://${process.env.APP_URL}`}>
 				<img
-					title="Landsort Fågelstation "
+					title="Landsorts Fågelstation "
 					className={getClass("logo")}
 					src="/images/logo-bara-fagel.png"
 					alt="Logo"
 				/>
 			</Link>
-			<Heading type="h1">Landsort Fågelstation</Heading>
+			<Heading type="h1">
+				Landsorts
+				<br />
+				<span style={{ color: "#ca652e" }}>Fågelstation</span>
+			</Heading>
 		</header>
 	);
 };

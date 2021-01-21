@@ -8,7 +8,7 @@ const makeAPIRequest = async (
 		"Content-Type": "application/json",
 	};
 	const resp = await fetch(
-		`${process.env.API_URL}${
+		`http://${process.env.API_URL}${
 			endpoint.startsWith("/") ? endpoint : "/".concat(endpoint)
 		}`,
 		{

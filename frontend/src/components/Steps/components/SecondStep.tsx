@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useRef } from "react";
 import Form from "../../Form/Form";
 import Heading from "../../Heading/Heading";
@@ -50,19 +51,24 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 			buttonText="Boka"
 			title="Personuppgifter"
 			onSubmit={async (_) => {
-				const resp = await fetch("http://localhost:8080/api/bookings", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						bunks: selectedBunks.map((bunk) => bunk.id),
-						user_email: memberref.current.value.toLowerCase().trim(),
-						start_date: arrival,
-						end_date: departure,
-					}),
-				});
-				const { errors, booking } = await resp.json();
+				const resp = await axios(
+					`http://${process.env.API_URL}/bookings`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						data: {
+							bunks: selectedBunks.map((bunk) => bunk.id),
+							user_email: memberref.current.value
+								.toLowerCase()
+								.trim(),
+							start_date: arrival,
+							end_date: departure,
+						},
+					}
+				);
+				const { errors, booking } = resp.data;
 				if (errors) {
 					console.error(errors);
 				} else {

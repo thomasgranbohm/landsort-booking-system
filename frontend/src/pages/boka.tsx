@@ -10,14 +10,12 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import Steps from "../components/Steps/Steps";
 import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
-
-const findRoom = (rooms: APITypes.Room[], roomId: number) =>
-	rooms.find((room) => room.id === roomId);
+import mapToRooms from "../functions/mapToRooms";
 
 const Boka = () => {
 	const router = useRouter();
 
-	const [rooms, setRooms] = useState<APITypes.Room[]>(undefined);
+	const [rooms, setRooms] = useState<APITypes.Room[]>([]);
 	const [dates, setDates] = useState<Dates>(undefined);
 	const [isLoading, setIsLoading] = useState<Boolean>(true);
 
@@ -33,24 +31,16 @@ const Boka = () => {
 
 				setIsLoading(true);
 				const resp = await axios(
-					`http://localhost:8080/api/bunks/available?${createGetParameters(
-						{
-							start_date,
-							end_date,
-						}
-					)}`
+					`http://${
+						process.env.API_URL
+					}/bunks/available?${createGetParameters({
+						start_date,
+						end_date,
+					})}`
 				);
 				const { bunks } = resp.data;
 
-				const rooms: APITypes.Room[] = [];
-				for (const bunk of bunks) {
-					if (!findRoom(rooms, bunk.room_id)) {
-						rooms.push(dissoc("bunks", bunk.room));
-					}
-					const room = findRoom(rooms, bunk.room_id);
-					if (!room.bunks) room.bunks = [];
-					room.bunks.push(dissocPath(["room", "bunks"], bunk));
-				}
+				const rooms: APITypes.Room[] = mapToRooms(bunks);
 
 				setDates({
 					arrival: start_date as string,
@@ -60,13 +50,14 @@ const Boka = () => {
 				setIsLoading(false);
 			} catch (error) {
 				console.error(error);
+				alert(error.message);
 			}
 		};
 		asyncFunction();
 	}, [router.query]);
 
 	return (
-		<div>
+		<main>
 			<PageTitle>Boka</PageTitle>
 			<HorizontalRule />
 			{!isLoading ? (
@@ -76,7 +67,7 @@ const Boka = () => {
 						departure={dates.departure}
 					/>
 					<HorizontalRule />
-					{rooms.length > 0 ? (
+					{rooms && rooms.length > 0 ? (
 						<Steps
 							dates={{
 								arrival: dates.arrival,
@@ -93,7 +84,7 @@ const Boka = () => {
 			) : (
 				<LoadingSpinner />
 			)}
-		</div>
+		</main>
 	);
 };
 

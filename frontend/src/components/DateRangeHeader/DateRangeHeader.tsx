@@ -1,21 +1,50 @@
 import getClassFunction from "../../functions/getClasses";
+import joinClasses from "../../functions/joinClasses";
 import Heading from "../Heading/Heading";
-import { Dates, HeadingTypes } from "../types";
+import { ClassNameProp, Dates, HeadingTypes } from "../types";
 import styles from "./DateRangeHeader.module.scss";
 
 const getClass = getClassFunction(styles);
 
 type Props = {
 	type?: HeadingTypes;
-} & Dates;
+	noCenter?: boolean;
+} & Dates &
+	ClassNameProp;
 
-const DateRangeHeader = ({ departure, arrival, type }: Props) => {
+const DateRangeHeader = ({
+	departure,
+	arrival,
+	type,
+	noCenter,
+	className,
+}: Props) => {
 	return (
-		<Heading type={type || "h3"} className={getClass("heading")}>
-			Ankomstdatum: {arrival}
+		<div
+			className={joinClasses(
+				[getClass("container"), true],
+				[getClass("noCenter"), noCenter],
+				[className, className]
+			)}
+		>
+			<Heading
+				type={type || "h3"}
+				noMargin
+				className={getClass("heading")}
+			>
+				<p>Ankomstdatum: </p>
+				<span>{arrival}</span>
+			</Heading>
 			<br />
-			Avresedatum: {departure}
-		</Heading>
+			<Heading
+				type={type || "h3"}
+				noMargin
+				className={getClass("heading")}
+			>
+				<p>Avresedatum: </p>
+				<span>{departure}</span>
+			</Heading>
+		</div>
 	);
 };
 

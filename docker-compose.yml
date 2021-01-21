@@ -44,19 +44,18 @@ services:
             - 1025:1025
             - 8025:8025
     frontend:
-        command: yarn dev || (yarn && yarn dev)
+        env_file: .env
         image: node:14
+        # command: bash -c "yarn prod || (yarn && yarn prod)"
+        command: bash -c "yarn start"
         ports:
-            - "3000:3000"
-        # expose:
-        #     - "3000"
-        user: node
+            - 3000:3000
         volumes:
-            - "./frontend:/home/node/frontend"
+            - ./frontend:/home/node/frontend
         working_dir: /home/node/frontend
         depends_on:
             - backend
-        env_file: .env
+        env_file: frontend/.env
 volumes:
     mysql:
         driver: local

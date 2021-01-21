@@ -4,6 +4,7 @@ import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 
 const Home = () => {
 	const router = useRouter();
+
 	const onSubmit = (start_date: Date, end_date: Date, link) => {
 		router.push({
 			pathname: link,
@@ -15,7 +16,7 @@ const Home = () => {
 	};
 
 	return (
-		<div>
+		<main>
 			<DateForm
 				buttonText={"Sök lediga sovplatser"}
 				formTitle={"Boka sängplats"}
@@ -27,7 +28,7 @@ const Home = () => {
 				formTitle={"Visa bokningsläget"}
 				onSubmit={(s, e) => onSubmit(s, e, "/bokningslaget")}
 			/>
-		</div>
+		</main>
 	);
 };
 
