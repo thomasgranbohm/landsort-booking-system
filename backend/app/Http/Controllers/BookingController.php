@@ -16,8 +16,6 @@ class BookingController extends Controller
 {
 	public function index(Request $request)
 	{
-		// curl localhost:8080/api/bookings/
-
 		$this->removeOutOfDate();
 		if (count($request->all()) === 0) return Booking::with(['bunks', 'user'])->get();
 
@@ -44,19 +42,14 @@ class BookingController extends Controller
 		$bookings = $this->getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
 
 		if ($validator->errors()->isNotEmpty()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
-		return response(array("bookings" => $bookings), 200)->header('Content-Type', 'application/json');
+		return $this->respond(array("bookings" => $bookings));
 	}
 
 	public function store(Request $request)
 	{
-		// curl localhost:8080/api/bookings/ -X POST -d "bunk_id=1&start_date=2021-01-01&end_date=2021-01-15&user_email=thomas@granbohm.dev"
 		$validator = Validator::make(
 			$request->all(),
 			[
@@ -69,11 +62,7 @@ class BookingController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
 		$bunks = $validator->validated()['bunks'];
@@ -101,11 +90,7 @@ class BookingController extends Controller
 		};
 
 		if ($validator->errors()->isNotEmpty()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
 		$booking = Booking::create([
@@ -118,23 +103,26 @@ class BookingController extends Controller
 		Mail::to($user_email)->send(new ConfirmationMail(Booking::find($booking_id)));
 		$booking->save();
 
-		return response(
+		return $this->respond(
 			array(
 				"booking" => Booking::where("id", $booking->id)
 					->with("user:id,firstname,lastname,email", "bunks:id,location,room_id", "bunks.room:id,location")
 					->first(["id", "start_date", "end_date", "user_id"])
-			),
-			200
-		)
-			->header('Content-Type', 'application/json');
+			)
+		);
 	}
 
 	public function show(Booking $booking)
 	{
 		$this->removeOutOfDate();
-		return Booking::where('id', $booking->id)
-			->with(['bunks:id,location,room_id', 'user:id,firstname,lastname,email,phonenumber', 'bunks.room:id,location'])
-			->first(['id', 'start_date', 'end_date', 'user_id']);
+		try {
+			$booking = Booking::where('id', $booking->id)
+				->with(['bunks:id,location,room_id', 'user:id,firstname,lastname,email,phonenumber', 'bunks.room:id,location'])
+				->firstOrFail(['id', 'start_date', 'end_date', 'user_id']);
+			return $this->respond(array("booking" => $booking));
+		} catch (\Throwable $th) {
+			return $this->errors(["booking" => "Could not find booking."]);
+		}
 	}
 
 	public function confirm($confirmation_token)
@@ -142,10 +130,9 @@ class BookingController extends Controller
 		try {
 			$booking = Booking::where("confirmation_token", $confirmation_token)->firstOrFail();
 			$booking->confirmed = true;
-			return $booking->save();
+			return $this->respond(["confirmed" => $booking->save()]);
 		} catch (ModelNotFoundException $ex) {
-			return response()
-				->json(array("errors" => array("booking" => "Could not find booking with that confirmation token.")));
+			return $this->errors(["booking" => "Could not find booking with that confirmation token."]);
 		}
 	}
 
@@ -159,58 +146,9 @@ class BookingController extends Controller
 			if (isset($_GET["noCancel"])) {
 				return response()->json(["booking" => $booking]);
 			}
-			return $booking->delete();
+			return $this->respond(["deleted" => $booking->delete()]);
 		} catch (ModelNotFoundException $ex) {
-			return response()
-				->json(array("errors" => array("booking" => "Could not find a booking with that cancellation token.")));
+			return $this->errors(["booking" => "Could not find a booking with that cancellation token."]);
 		};
-	}
-
-	private function removeOutOfDate()
-	{
-		try {
-			foreach (Booking::where("confirmed", false)
-				->where('created_at', '<', now()->subMinutes(config('global.confirmation_period')))
-				->get() as $bunk) {
-				$bunk->delete();
-			}
-			return true;
-		} catch (\Throwable $th) {
-			return false;
-		}
-	}
-
-
-	private function getBookingsInRange(
-		$start_date,
-		$end_date,
-		$dateBeforeEnd,
-		$dateAfterStart,
-		$bunks = null
-	) {
-		$base = Booking::with(
-			"user:id,firstname,lastname,email",
-			"bunks:id,location,room_id",
-			"bunks.room:id,location"
-		);
-
-
-		if ($bunks != null) {
-			$base
-				->whereHas('bunks', function (Builder $builder) use ($bunks) {
-					$builder->whereIn("bunk_id", $bunks);
-				});
-		}
-
-		return $base
-			->where(function ($query) use ($start_date, $end_date, $dateAfterStart, $dateBeforeEnd) {
-				$query->where([
-					["start_date", "<=", $start_date],
-					["end_date", ">=", $end_date]
-				])
-					->orWhereBetween("start_date", [$start_date, $dateBeforeEnd])
-					->orWhereBetween("end_date", [$dateAfterStart, $end_date]);
-			})
-			->get();
 	}
 }

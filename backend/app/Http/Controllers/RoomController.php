@@ -24,38 +24,23 @@ use Symfony\Contracts\Service\Attribute\Required;
 
 class RoomController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
 	public function index()
 	{
-		// curl localhost:8080/api/rooms
-		return Room::with('bunks')->get();
+		return $this->respond(["rooms" => Room::with('bunks')->get()]);
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
 	public function store(Request $request)
 	{
-		// curl localhost:8080/api/rooms -X POST -d "location=A"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|min:1|max:16'
 		]);
 		if ($validator->fails())
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 
-		return Room::create($validator->validated())
-			->save();
+		return $this->respond([
+			"created" => Room::create($validator->validated())
+				->save()
+		]);
 	}
 
 	public function available(Request $request)
@@ -69,11 +54,7 @@ class RoomController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
@@ -103,63 +84,32 @@ class RoomController extends Controller
 			)->get();
 
 		if ($validator->errors()->isNotEmpty()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
-		return $availableBunks;
+		return $this->respond(["bunks" => $availableBunks]);
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  \App\Models\Room  $room
-	 * @return \Illuminate\Http\Response
-	 */
 	public function show(Room $room)
 	{
-		// curl localhost:8080/api/rooms/1
-		return $room::where("id", $room->id)->with('bunks')->first();
+		return $this->respond(["room" => $room::where("id", $room->id)->with('bunks')->first()]);
 	}
 
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  \App\Models\Room  $room
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request, Room $room)
 	{
-		// curl localhost:8080/api/rooms/1 -X PUT -d "location=D"
 		$validator = Validator::make($request->toArray(), [
 			'location' => 'required|unique:rooms|max:16'
 		]);
 		if ($validator->fails())
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');;
+			return $this->errors($validator->errors()->toJson());
 
 		$room->location = $validator->validated()['location'];
 
-		return $room->save();
+		return $this->respond(["updated" => $room->save()]);
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  \App\Models\Room  $room
-	 * @return \Illuminate\Http\Response
-	 */
 	public function destroy(Room $room)
 	{
-		// curl localhost:8080/api/rooms/1 -X DELETE
-		return $room->delete();
+		return $this->respond(["deleted" => $room->delete()]);
 	}
 }

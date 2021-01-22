@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Models\Bunk;
 use App\Models\Room;
 use Carbon\Carbon;
@@ -24,14 +23,23 @@ class BunkController extends Controller
 {
 	public function index(Room $room)
 	{
-		return Room::with('bunks:id,location,room_id', 'bunks.bookings:id,start_date,end_date,user_id', 'bunks.bookings.user:id,firstname,lastname')
-			->find($room->id)
-			->bunks;
+		return $this->respond(
+			array("bunks" => Room::with('bunks:id,location,room_id', 'bunks.bookings:id,start_date,end_date,user_id', 'bunks.bookings.user:id,firstname,lastname')
+				->find($room->id)
+				->bunks)
+		);
 	}
 
 	public function show(Bunk $bunk)
 	{
-		return $bunk::where("id", $bunk->id)->with('room', 'bookings')->first();
+		return $this->respond(
+			array(
+				"bunk" => $bunk
+					->where("id", $bunk->id)
+					->with('room:id,location', 'bookings:id,start_date,end_date,confirmed')
+					->first()
+			)
+		);
 	}
 
 	public function store(Request $request, Room $room)
@@ -44,15 +52,13 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
-		return Bunk::create($validator->validated())
-			->save();
+		return $this->respond([
+			"created" => Bunk::create($validator->validated())
+				->save()
+		]);
 	}
 
 	public function available(Request $request)
@@ -67,11 +73,7 @@ class BunkController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
@@ -101,14 +103,10 @@ class BunkController extends Controller
 			)->get();
 
 		if ($validator->errors()->isNotEmpty()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
-		return response(array("bunks" => $availableBunks), 200)->header('Content-Type', 'application/json');
+		return $this->respond(array("bunks" => $availableBunks));
 	}
 
 	public function update(Request $request, Bunk $bunk)
@@ -120,11 +118,7 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return response(array(
-				"errors" => $validator
-					->errors()
-			), 400)
-				->header('Content-Type', 'application/json');
+			return $this->errors($validator->errors()->toJson());
 		}
 
 		$location = $validator
@@ -136,32 +130,18 @@ class BunkController extends Controller
 			->first();
 
 		if ($bunkWithLocation) {
-			return array(
-				"errors" => $validator
+			return $this->errors(
+				$validator
 					->errors()
 					->add("location", "That location already exists in this room.")
 			);
 		}
 		$bunk->location = $location;
-		return $bunk->save();
+		return $this->respond(["updated" => $bunk->save()]);
 	}
 
 	public function destroy(Bunk $bunk)
 	{
-		return $bunk->delete();
-	}
-
-	private function removeOutOfDate()
-	{
-		try {
-			foreach (Booking::where("confirmed", false)
-				->where('created_at', '<', now()->subMinutes(config('global.confirmation_period')))
-				->get() as $bunk) {
-				$bunk->delete();
-			}
-			return true;
-		} catch (\Throwable $th) {
-			return false;
-		}
+		return $this->respond(["deleted" => $bunk->delete()]);
 	}
 }
