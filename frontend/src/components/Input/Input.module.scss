@@ -1,7 +1,9 @@
+@import "../../styles/variables";
+
 .input {
 	padding: 1em;
 	border: 1px solid gray;
 	position: relative;
 	width: 100%;
-	border-radius: 6px;
+	border-radius: $border-radius;
 }

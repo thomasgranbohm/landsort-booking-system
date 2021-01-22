@@ -1,3 +1,5 @@
+@import "../../styles/variables";
+
 .indicator {
 	max-width: 100%;
 	height: 2em;
@@ -7,7 +9,7 @@
 	color: white;
 	font-weight: 600;
 
-	background-color: #00a323;
+	background-color: $green;
 
 	transition: width 0.1s;
 

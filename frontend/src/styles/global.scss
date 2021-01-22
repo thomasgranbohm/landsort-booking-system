@@ -1,4 +1,5 @@
 @import "./fonts";
+@import "./variables";
 
 * {
 	margin: 0;
@@ -8,7 +9,7 @@
 }
 
 body {
-	max-width: 210mm;
+	max-width: $width;
 	width: 100%;
 	margin: 0 auto;
 	padding: 1em 2em;

@@ -1,7 +1,9 @@
+@import "../../styles/variables";
+
 .booking {
 	padding: 1em;
 	border: 1px solid gray;
-	border-radius: 6px;
+	border-radius: $border-radius;
 	> *:not(:last-child) {
 		margin-bottom: 1em;
 	}

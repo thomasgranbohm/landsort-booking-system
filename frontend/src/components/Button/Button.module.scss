@@ -1,7 +1,9 @@
+@import "../../styles/variables";
+
 .button {
 	font-weight: 600;
 	padding: 1em 0.5em;
-	border-radius: 6px;
+	border-radius: $border-radius;
 
 	display: block;
 
@@ -25,7 +27,7 @@
 		font-size: unset;
 		width: unset;
 	}
-	background-color: #cc662e;
+	background-color: $orange;
 	&:hover {
 		text-decoration: underline;
 		background-color: #a15125;
@@ -33,7 +35,7 @@
 }
 
 .continue {
-	background-color: #00a323;
+	background-color: $green;
 	&::after {
 		content: "→";
 		display: inline;
@@ -44,7 +46,7 @@
 	}
 }
 .return {
-	background-color: #e80c0c;
+	background-color: $red;
 	&::before {
 		content: "←";
 		display: inline;
