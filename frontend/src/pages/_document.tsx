@@ -6,6 +6,7 @@ class CustomDocument extends Document {
 			<Html lang="sv">
 				<Head />
 				<body>
+					<div id="modal"></div>
 					<Main />
 					<NextScript />
 				</body>

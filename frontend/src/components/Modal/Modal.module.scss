@@ -1,0 +1,13 @@
+.modal {
+	$width: 210mm;
+	width: $width;
+	height: 12em;
+
+	position: fixed;
+	left: calc(50% - $width);
+
+	border: 4px solid gray;
+	border-radius: 6px;
+	background-color: white;
+	padding: 1em;
+}
