@@ -1,10 +1,12 @@
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import makeAPIRequest from "../../../functions/makeAPIRequest";
+import parseError from "../../../functions/parseError";
 import Form from "../../Form/Form";
 import Heading from "../../Heading/Heading";
 import HorizontalRule from "../../HorizontalRule/HorizontalRule";
 import Input from "../../Input/Input";
 import InputWithLabel from "../../InputWithLabel/InputWithLabel";
+import { ModalContext, ModalTypes } from "../../Modal/Modal";
 import { APITypes, Dates, UserInputRefs } from "../../types";
 import UserInput from "../../UserInput/UserInput";
 
@@ -19,6 +21,7 @@ type E = {
 
 const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 	const memberref = useRef<HTMLInputElement>();
+	const { handleModal } = useContext<ModalTypes>(ModalContext);
 
 	const refs: E[] = [];
 
@@ -63,7 +66,10 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 					},
 				});
 				if (errors) {
-					console.error(errors);
+					handleModal({
+						error: true,
+						data: parseError(JSON.parse(errors)),
+					});
 				} else {
 					nextStep(booking);
 				}

@@ -1,18 +1,21 @@
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Bookings from "../components/BookingContainer/BookingContainer";
 import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
 import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import { ModalContext, ModalTypes } from "../components/Modal/Modal";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
 import makeAPIRequest from "../functions/makeAPIRequest";
+import parseError from "../functions/parseError";
 
 const Bokningsläget: React.FC = () => {
 	const router = useRouter();
+	const { handleModal } = useContext<ModalTypes>(ModalContext);
 
 	const [bookings, setBookings] = useState<APITypes.Booking[]>([]);
 	const [dates, setDates] = useState<Dates>(undefined);
@@ -41,7 +44,10 @@ const Bokningsläget: React.FC = () => {
 			});
 
 			if (errors) {
-				alert(JSON.stringify(errors));
+				handleModal({
+					error: true,
+					data: parseError(JSON.parse(errors)),
+				});
 			} else {
 				setBookings(bookings as APITypes.Booking[]);
 			}

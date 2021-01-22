@@ -1,15 +1,37 @@
 @import "../../styles/variables";
 
+.container {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100vh;
+	width: 100vw;
+
+	padding: 1em 2em;
+
+	background-color: #00000088;
+
+	// TODO: Should not be 100000000
+	z-index: 100000000 !important;
+}
+
 .modal {
-	width: $width;
-	height: 12em;
+	max-width: $width;
+	width: 100%;
 
-	position: fixed;
-	left: calc(50% - $width);
-
-	border: 4px solid gray;
 	border-radius: $border-radius;
 
 	background-color: white;
 	padding: 1em;
+
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1em;
+}
+
+.error {
+	background-color: $red;
+	border: 4px solid $light-red;
+
+	color: white;
 }

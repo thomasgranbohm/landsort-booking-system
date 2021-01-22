@@ -1,14 +1,18 @@
 import { useRouter } from "next/dist/client/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Booking from "../components/Booking/Booking";
 import Button from "../components/Button/Button";
 import Heading from "../components/Heading/Heading";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import { ModalContext, ModalTypes } from "../components/Modal/Modal";
 import { APITypes } from "../components/types";
 import makeAPIRequest from "../functions/makeAPIRequest";
+import parseError from "../functions/parseError";
 
 const Avboka = () => {
 	const router = useRouter();
+	const { handleModal } = useContext<ModalTypes>(ModalContext);
+
 	const [booking, setBooking] = useState<APITypes.Booking>(undefined);
 	const [cancellationId, setCancellationid] = useState<string>(undefined);
 	const [isLoading, setIsLoading] = useState<Boolean>(true);
@@ -26,7 +30,10 @@ const Avboka = () => {
 			);
 
 			if (errors) {
-				alert(JSON.stringify(errors));
+				handleModal({
+					error: true,
+					data: parseError(JSON.parse(errors)),
+				});
 			} else {
 				setBooking(booking);
 				setCancellationid(cancellation_token as string);

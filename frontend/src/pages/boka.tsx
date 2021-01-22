@@ -1,18 +1,22 @@
 import { useRouter } from "next/dist/client/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
 import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import { ModalContext, ModalTypes } from "../components/Modal/Modal";
 import PageTitle from "../components/PageTitle/PageTitle";
 import Steps from "../components/Steps/Steps";
 import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
 import makeAPIRequest from "../functions/makeAPIRequest";
 import mapToRooms from "../functions/mapToRooms";
+import parseError from "../functions/parseError";
 
 const Boka = () => {
 	const router = useRouter();
+
+	const { handleModal } = useContext<ModalTypes>(ModalContext);
 
 	const [rooms, setRooms] = useState<APITypes.Room[]>([]);
 	const [dates, setDates] = useState<Dates>(undefined);
@@ -42,7 +46,10 @@ const Boka = () => {
 			});
 
 			if (errors) {
-				alert(JSON.stringify(errors));
+				handleModal({
+					error: true,
+					data: parseError(JSON.parse(errors)),
+				});
 			} else {
 				const rooms: APITypes.Room[] = mapToRooms(bunks);
 
