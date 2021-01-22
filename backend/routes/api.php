@@ -27,8 +27,8 @@ Route::apiResource('users', UserController::class)
 		'destroy'
 	]);
 
-Route::get('/bookings/confirm/{confirmation_token}', [BookingController::class, "confirm"]);
-Route::get('/bookings/cancel/{cancellation_token}', [BookingController::class, "cancel"]);
+Route::get('/bookings/{booking_id}/confirm', [BookingController::class, "confirm"]);
+Route::get('/bookings/{booking_id}/cancel', [BookingController::class, "cancel"]);
 Route::apiResource('bookings', BookingController::class)
 	->except([
 		'update',

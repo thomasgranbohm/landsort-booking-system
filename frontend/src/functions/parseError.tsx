@@ -1,5 +1,5 @@
 type Errors = {
-	[key: string]: string[];
+	[key: string]: string | string[];
 };
 
 const capitalize = (str: string) =>
@@ -9,7 +9,9 @@ const parseError = (errors: Errors) =>
 	Object.entries(errors).map(([key, value], i) => (
 		<p key={i}>
 			<b>{key.split("_").map(capitalize).join(" ")}:</b>{" "}
-			{value.map(capitalize).join(" ")}
+			{typeof value === "string"
+				? value
+				: value.map(capitalize).join(" ")}
 		</p>
 	));
 

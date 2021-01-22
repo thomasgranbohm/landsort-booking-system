@@ -34,6 +34,18 @@
 	}
 }
 
+.inline {
+	display: inline-block;
+	margin: 0 1em;
+
+	&:first-of-type {
+		margin-left: 0;
+	}
+	&:last-of-type {
+		margin-right: 0;
+	}
+}
+
 .continue {
 	background-color: $green;
 	&::after {
@@ -42,7 +54,7 @@
 		margin-left: 4px;
 	}
 	&:hover {
-		background-color: #00861d;
+		background-color: $dark-green;
 	}
 }
 .return {
@@ -52,4 +64,12 @@
 		display: inline;
 		margin-right: 4px;
 	}
+	&:hover {
+		background-color: $dark-red;
+	}
+}
+
+.continue.withoutContent::after,
+.return.withoutContent::before {
+	content: "";
 }

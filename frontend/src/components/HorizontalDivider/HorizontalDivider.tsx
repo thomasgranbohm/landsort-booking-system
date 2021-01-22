@@ -14,7 +14,7 @@ const HorizontalDivider: React.FC<Props> = ({ className, children }) => {
 					return (
 						<>
 							{child}
-							<HorizontalRule />
+							<HorizontalRule key={"horizontal-rule-" + i} />
 						</>
 					);
 				} else {

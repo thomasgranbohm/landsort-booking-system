@@ -13,8 +13,7 @@
 
 		<p><b>Du måste godkänna bokningen inom {{ config('global.confirmation_period') }} minuter för att den ska gälla!</b></p>
 
-		<p>För att godkänna bokningen, <a href="{{ config('app.url') }}"><b>vänligen klicka här.</b></a></p>
-		<p>För att boka av, <a href="{{ config('app.url') }}/avboka/?avbokningsid={{ $cancellation_token }}"><b>vänligen klicka här.</b></a></p>
+		<p>För att godkänna eller avbryta bokningen, <a href="{{ config('app.url') }}/hantera/{{ $id }}"><b>vänligen klicka här.</b></a></p>
 	</main>
 
 	<hr>

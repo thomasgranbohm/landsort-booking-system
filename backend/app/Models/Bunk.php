@@ -11,6 +11,13 @@ class Bunk extends Model
 
 	protected $fillable = ['location', 'room_id'];
 
+	protected $visible = [
+		"id",
+		"room",
+		"bookings",
+		"location"
+	];
+
 	public function room()
 	{
 		return $this->belongsTo("App\Models\Room");

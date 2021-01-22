@@ -19,6 +19,19 @@ class Booking extends Model
 		"confirmed"
 	];
 
+	protected $attributes = [
+		"confirmed" => false
+	];
+
+	protected $visible = [
+		"id",
+		"user",
+		"bunks",
+		"start_date",
+		"end_date",
+		"confirmed",
+	];
+
 	protected static function boot()
 	{
 		parent::boot();
@@ -27,9 +40,6 @@ class Booking extends Model
 			if (!$booking->getKey()) {
 				$booking->{$booking->getKeyName()} = (string) Str::uuid();
 			}
-			$booking->confirmation_token = (string) Str::uuid();
-			$booking->cancellation_token = (string) Str::uuid();
-			$booking->confirmed = false;
 		});
 	}
 

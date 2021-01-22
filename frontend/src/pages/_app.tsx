@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Header from "../components/Header/Header";
+import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import { ModalProvider } from "../components/Modal/Modal";
 import PageTitle from "../components/PageTitle/PageTitle";
 import "../styles/global.scss";
@@ -17,6 +18,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
 			</Head>
 			<PageTitle />
 			<Header />
+			<HorizontalRule />
 			<ModalProvider>
 				<Component {...pageProps} />
 			</ModalProvider>

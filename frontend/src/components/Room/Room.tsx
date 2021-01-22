@@ -22,8 +22,8 @@ const Room = ({ id, location, bunks }: Props) => {
 		};
 		return (
 			<div>
-				{bunks.map((bunk, i) => (
-					<Bunk key={i} {...bunk} />
+				{bunks.map((bunk) => (
+					<Bunk key={bunk.location} {...bunk} />
 				))}
 			</div>
 		);

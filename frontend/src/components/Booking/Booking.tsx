@@ -22,9 +22,11 @@ const Booking = ({ booking }: Props) => {
 
 	const rooms = mapToRooms(bunks);
 
+	console.log(rooms);
+
 	const BookedSpaces = () => (
-		<HorizontalDivider>
-			{rooms.map(({ location: roomLocation, bunks }) => (
+		<HorizontalDivider className={getClass("bookedspaces")}>
+			{rooms.map(({ location: roomLocation, bunks }, index) => (
 				<div className={getClass("row")}>
 					<p className={getClass("room")}>
 						<b>Rum: </b>
@@ -49,6 +51,7 @@ const Booking = ({ booking }: Props) => {
 				type="b"
 				arrival={start_date}
 				departure={end_date}
+				className={getClass("dates")}
 			/>
 			<BookedSpaces />
 		</div>

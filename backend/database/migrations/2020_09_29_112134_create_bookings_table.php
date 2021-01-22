@@ -24,9 +24,6 @@ class CreateBookingsTable extends Migration
 				->references('id')
 				->on('users');
 
-			$table->uuid("confirmation_token")->default(Str::uuid());
-			$table->uuid("cancellation_token")->default(Str::uuid());;
-
 			$table->boolean("confirmed");
 
 			$table->timestamps();

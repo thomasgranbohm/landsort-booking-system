@@ -15,15 +15,21 @@ const makeAPIRequest = async (
 					headers: {
 						"Content-Type": "application/json",
 					},
+					responseType: "json",
 				},
 				config
-			)
+			) as AxiosRequestConfig
 		);
 		return resp.data;
 	} catch (err) {
 		if (err.response) {
-			return err.response.data;
+			try {
+				return JSON.parse(err.response.data);
+			} catch (_) {
+				return err.response.data;
+			}
 		}
+		throw err;
 	}
 };
 

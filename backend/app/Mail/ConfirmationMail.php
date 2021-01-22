@@ -34,13 +34,11 @@ class ConfirmationMail extends Mailable implements ShouldQueue
 	{
 		return $this
 			->view('emails.confirmation', [
-				// ->markdown('emails.confirmation', [
+				"id" => $this->booking->id,
 				"arrival" => $this->booking->start_date,
 				"departure" => $this->booking->end_date,
 				"bunks" => $this->booking->bunks,
 				"user" => $this->booking->user,
-				"confirmation_token" => $this->booking->confirmation_token,
-				"cancellation_token" => $this->booking->cancellation_token
 			])
 			->subject("Godkänn din bokning");
 	}

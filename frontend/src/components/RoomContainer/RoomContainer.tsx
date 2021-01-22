@@ -13,7 +13,7 @@ const RoomContainer = ({ rooms }: Props) => {
 	return (
 		<div className={getClass("rooms")}>
 			{rooms.map((room) => (
-				<Room key={room.id} {...room} />
+				<Room key={room.location} {...room} />
 			))}
 		</div>
 	);

@@ -11,6 +11,12 @@ class Room extends Model
 
 	protected $fillable = ['location'];
 
+	protected $visible = [
+		"id",
+		"location",
+		"bunks"
+	];
+
 	public function bunks()
 	{
 		return $this->hasMany("App\Models\Bunk");

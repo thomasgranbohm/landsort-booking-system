@@ -9,6 +9,8 @@ type Props = {
 	value?: string;
 	onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 	customType?: "continue" | "return";
+	withoutContent?: boolean;
+	inline?: boolean;
 } & ClassNameProp &
 	AnyProps;
 
@@ -18,6 +20,8 @@ const Button: React.FC<Props> = ({
 	children,
 	value,
 	customType,
+	withoutContent,
+	inline,
 	...props
 }) => {
 	return (
@@ -27,6 +31,8 @@ const Button: React.FC<Props> = ({
 			className={joinClasses(
 				[getClass("button"), true],
 				[getClass(customType), customType],
+				[getClass("withoutContent"), withoutContent],
+				[getClass("inline"), inline],
 				[className, className]
 			)}
 		>

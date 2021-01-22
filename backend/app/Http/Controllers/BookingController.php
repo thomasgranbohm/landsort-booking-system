@@ -17,7 +17,7 @@ class BookingController extends Controller
 	public function index(Request $request)
 	{
 		$this->removeOutOfDate();
-		if (count($request->all()) === 0) return Booking::with(['bunks', 'user'])->get();
+		if (count($request->all()) === 0) return Booking::with(['bunks', 'bunks.room', 'user'])->get();
 
 		$validator = Validator::make(
 			$request->all(),
@@ -125,10 +125,10 @@ class BookingController extends Controller
 		}
 	}
 
-	public function confirm($confirmation_token)
+	public function confirm($booking_id)
 	{
 		try {
-			$booking = Booking::where("confirmation_token", $confirmation_token)->firstOrFail();
+			$booking = Booking::findOrFail($booking_id);
 			$booking->confirmed = true;
 			return $this->respond(["confirmed" => $booking->save()]);
 		} catch (ModelNotFoundException $ex) {
@@ -136,16 +136,10 @@ class BookingController extends Controller
 		}
 	}
 
-	public function cancel($cancellation_token)
+	public function cancel($booking_id)
 	{
 		try {
-			$booking = Booking::with("bunks:id,location,room_id", "bunks.room:id,location", "user:id,firstname,lastname")
-				->where("cancellation_token", $cancellation_token)
-				->select(["id", "start_date", "end_date", "user_id"])
-				->firstOrFail();
-			if (isset($_GET["noCancel"])) {
-				return response()->json(["booking" => $booking]);
-			}
+			$booking = Booking::findOrFail($booking_id);
 			return $this->respond(["deleted" => $booking->delete()]);
 		} catch (ModelNotFoundException $ex) {
 			return $this->errors(["booking" => "Could not find a booking with that cancellation token."]);

@@ -60,7 +60,6 @@ const Bokningsläget: React.FC = () => {
 	return (
 		<main>
 			<PageTitle>Bokningsläget</PageTitle>
-			<HorizontalRule />
 			{!isLoading ? (
 				<>
 					<DateRangeHeader

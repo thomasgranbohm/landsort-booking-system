@@ -2,7 +2,7 @@ import { useRouter } from "next/dist/client/router";
 import { useContext, useEffect, useState } from "react";
 import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
-import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
+import HorizontalDivider from "../components/HorizontalDivider/HorizontalDivider";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { ModalContext, ModalTypes } from "../components/Modal/Modal";
 import PageTitle from "../components/PageTitle/PageTitle";
@@ -52,7 +52,6 @@ const Boka = () => {
 				});
 			} else {
 				const rooms: APITypes.Room[] = mapToRooms(bunks);
-
 				setRooms(rooms as APITypes.Room[]);
 			}
 
@@ -64,14 +63,12 @@ const Boka = () => {
 	return (
 		<main>
 			<PageTitle>Boka</PageTitle>
-			<HorizontalRule />
 			{!isLoading ? (
-				<>
+				<HorizontalDivider>
 					<DateRangeHeader
 						arrival={dates.arrival}
 						departure={dates.departure}
 					/>
-					<HorizontalRule />
 					{rooms && rooms.length > 0 ? (
 						<Steps
 							dates={{
@@ -85,7 +82,7 @@ const Boka = () => {
 							Finns inga rum i det valda intervallet.
 						</Heading>
 					)}
-				</>
+				</HorizontalDivider>
 			) : (
 				<LoadingSpinner />
 			)}

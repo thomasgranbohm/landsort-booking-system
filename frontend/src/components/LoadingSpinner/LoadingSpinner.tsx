@@ -6,7 +6,7 @@ const getClass = getClassFunction(styles);
 const LoadingSpinner = () => {
 	return (
 		<Heading type="h2" className={getClass("title")}>
-			Loading...
+			Laddar in...
 		</Heading>
 	);
 };

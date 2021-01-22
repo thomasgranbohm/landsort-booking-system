@@ -17,6 +17,12 @@ class User extends Model
 		'phonenumber'
 	];
 
+	protected $hidden = [
+		"id",
+		"created_at",
+		"updated_at"
+	];
+
 	public function bookings()
 	{
 		return $this->hasMany("App\Models\Booking");
