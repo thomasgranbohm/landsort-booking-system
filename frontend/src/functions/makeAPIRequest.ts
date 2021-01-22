@@ -1,24 +1,30 @@
-type CustomRequestInit = RequestInit;
+import axios, { AxiosRequestConfig } from "axios";
+import { mergeRight } from "ramda";
 
 const makeAPIRequest = async (
 	endpoint: string,
-	init: CustomRequestInit = {}
+	config: AxiosRequestConfig = {}
 ) => {
-	const headers = {
-		"Content-Type": "application/json",
-	};
-	const resp = await fetch(
-		`http://${process.env.API_URL}${
-			endpoint.startsWith("/") ? endpoint : "/".concat(endpoint)
-		}`,
-		{
-			...headers,
-			...init,
+	try {
+		const resp = await axios(
+			`http://${process.env.API_URL}${
+				endpoint.startsWith("/") ? endpoint : "/".concat(endpoint)
+			}`,
+			mergeRight(
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				},
+				config
+			)
+		);
+		return resp.data;
+	} catch (err) {
+		if (err.response) {
+			return err.response.data;
 		}
-	);
-	const result = await resp.json();
-
-	return result;
+	}
 };
 
 export default makeAPIRequest;

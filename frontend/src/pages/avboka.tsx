@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
 import Booking from "../components/Booking/Booking";
@@ -6,6 +5,7 @@ import Button from "../components/Button/Button";
 import Heading from "../components/Heading/Heading";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { APITypes } from "../components/types";
+import makeAPIRequest from "../functions/makeAPIRequest";
 
 const Avboka = () => {
 	const router = useRouter();
@@ -15,24 +15,24 @@ const Avboka = () => {
 
 	useEffect(() => {
 		const asyncFunction = async () => {
-			try {
-				const { avbokningsid: cancellation_token } = router.query;
+			const { avbokningsid: cancellation_token } = router.query;
 
-				if (!cancellation_token) return;
+			if (!cancellation_token) return;
 
-				setIsLoading(true);
-				const resp = await axios(
-					`http://${process.env.API_URL}/bookings/cancel/${cancellation_token}?noCancel`
-				);
-				const { booking } = resp.data;
+			setIsLoading(true);
 
+			const { errors, booking } = await makeAPIRequest(
+				`/bookings/cancel/${cancellation_token}?noCancel`
+			);
+
+			if (errors) {
+				alert(JSON.stringify(errors));
+			} else {
 				setBooking(booking);
 				setCancellationid(cancellation_token as string);
-				setIsLoading(false);
-			} catch (error) {
-				console.error(error);
-				alert(error.message);
 			}
+
+			setIsLoading(false);
 		};
 		asyncFunction();
 	}, [router.query]);

@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useRef } from "react";
+import makeAPIRequest from "../../../functions/makeAPIRequest";
 import Form from "../../Form/Form";
 import Heading from "../../Heading/Heading";
 import HorizontalRule from "../../HorizontalRule/HorizontalRule";
@@ -51,24 +51,17 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 			buttonText="Boka"
 			title="Personuppgifter"
 			onSubmit={async (_) => {
-				const resp = await axios(
-					`http://${process.env.API_URL}/bookings`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						data: {
-							bunks: selectedBunks.map((bunk) => bunk.id),
-							user_email: memberref.current.value
-								.toLowerCase()
-								.trim(),
-							start_date: arrival,
-							end_date: departure,
-						},
-					}
-				);
-				const { errors, booking } = resp.data;
+				const { errors, booking } = await makeAPIRequest("/bookings", {
+					method: "POST",
+					data: {
+						bunks: selectedBunks.map((bunk) => bunk.id),
+						user_email: memberref.current.value
+							.toLowerCase()
+							.trim(),
+						start_date: arrival,
+						end_date: departure,
+					},
+				});
 				if (errors) {
 					console.error(errors);
 				} else {
@@ -76,8 +69,8 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 				}
 			}}
 		>
-			<UserInputs />
-			<HorizontalRule />
+			{/* <UserInputs />
+			<HorizontalRule /> */}
 			<InputWithLabel
 				label="Medlemmens mailaddress"
 				forInput="memberemail"

@@ -1,6 +1,4 @@
-import axios from "axios";
 import { useRouter } from "next/dist/client/router";
-import { dissoc, dissocPath } from "ramda";
 import { useEffect, useState } from "react";
 import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
 import Heading from "../components/Heading/Heading";
@@ -10,6 +8,7 @@ import PageTitle from "../components/PageTitle/PageTitle";
 import Steps from "../components/Steps/Steps";
 import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
+import makeAPIRequest from "../functions/makeAPIRequest";
 import mapToRooms from "../functions/mapToRooms";
 
 const Boka = () => {
@@ -21,37 +20,36 @@ const Boka = () => {
 
 	useEffect(() => {
 		const asyncFunction = async () => {
-			try {
-				const {
-					ankomstdatum: start_date,
-					avresedatum: end_date,
-				} = router.query;
+			const {
+				ankomstdatum: start_date,
+				avresedatum: end_date,
+			} = router.query;
 
-				if (!start_date || !end_date) return;
+			if (!start_date || !end_date) return;
 
-				setIsLoading(true);
-				const resp = await axios(
-					`http://${
-						process.env.API_URL
-					}/bunks/available?${createGetParameters({
-						start_date,
-						end_date,
-					})}`
-				);
-				const { bunks } = resp.data;
+			setIsLoading(true);
 
+			const { errors, bunks } = await makeAPIRequest(
+				`/bunks/available?${createGetParameters({
+					start_date,
+					end_date,
+				})}`
+			);
+
+			setDates({
+				arrival: start_date as string,
+				departure: end_date as string,
+			});
+
+			if (errors) {
+				alert(JSON.stringify(errors));
+			} else {
 				const rooms: APITypes.Room[] = mapToRooms(bunks);
 
-				setDates({
-					arrival: start_date as string,
-					departure: end_date as string,
-				});
 				setRooms(rooms as APITypes.Room[]);
-				setIsLoading(false);
-			} catch (error) {
-				console.error(error);
-				alert(error.message);
 			}
+
+			setIsLoading(false);
 		};
 		asyncFunction();
 	}, [router.query]);

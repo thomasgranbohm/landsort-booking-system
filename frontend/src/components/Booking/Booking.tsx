@@ -30,13 +30,9 @@ const Booking = ({ booking }: Props) => {
 						<b>Rum: </b>
 						{roomLocation}
 					</p>
-					<p className={getClass("bunks")}>
-						{bunks.map(({ location: bunkLocation }) => (
-							<p className={getClass("bunk")}>
-								<b>Plats: </b>
-								{bunkLocation}
-							</p>
-						))}
+					<p className={getClass("bunk")}>
+						<b>Plats: </b>
+						{bunks.map(({ location }) => location).join(", ")}
 					</p>
 				</div>
 			))}

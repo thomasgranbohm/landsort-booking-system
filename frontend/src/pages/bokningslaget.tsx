@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,6 +9,7 @@ import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import PageTitle from "../components/PageTitle/PageTitle";
 import { APITypes, Dates } from "../components/types";
 import createGetParameters from "../functions/createGetParameters";
+import makeAPIRequest from "../functions/makeAPIRequest";
 
 const Bokningsläget: React.FC = () => {
 	const router = useRouter();
@@ -19,36 +19,34 @@ const Bokningsläget: React.FC = () => {
 	const [isLoading, setIsLoading] = useState<Boolean>(true);
 	useEffect(() => {
 		const asyncFunction = async () => {
-			try {
-				const {
-					ankomstdatum: start_date,
-					avresedatum: end_date,
-				} = router.query;
+			const {
+				ankomstdatum: start_date,
+				avresedatum: end_date,
+			} = router.query;
 
-				if (!start_date || !end_date) return;
+			if (!start_date || !end_date) return;
 
-				setIsLoading(true);
+			setIsLoading(true);
 
-				const resp = await axios(
-					`http://${
-						process.env.API_URL
-					}/bookings?${createGetParameters({
-						start_date,
-						end_date,
-					})}`
-				);
-				const { bookings } = resp.data;
+			const { errors, bookings } = await makeAPIRequest(
+				`/bookings?${createGetParameters({
+					start_date,
+					end_date,
+				})}`
+			);
 
-				setDates({
-					arrival: start_date as string,
-					departure: end_date as string,
-				});
+			setDates({
+				arrival: start_date as string,
+				departure: end_date as string,
+			});
+
+			if (errors) {
+				alert(JSON.stringify(errors));
+			} else {
 				setBookings(bookings as APITypes.Booking[]);
-				setIsLoading(false);
-			} catch (error) {
-				console.error(error);
-				alert(error.message);
 			}
+
+			setIsLoading(false);
 		};
 		asyncFunction();
 	}, [router.query]);
