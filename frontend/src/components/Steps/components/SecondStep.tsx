@@ -1,13 +1,12 @@
 import { useContext, useRef } from "react";
 import makeAPIRequest from "../../../functions/makeAPIRequest";
-import parseError from "../../../functions/parseError";
+import { APITypes, Dates, UserInputRefs } from "../../../types";
 import Form from "../../Form/Form";
 import Heading from "../../Heading/Heading";
 import HorizontalRule from "../../HorizontalRule/HorizontalRule";
 import Input from "../../Input/Input";
 import InputWithLabel from "../../InputWithLabel/InputWithLabel";
 import { ModalContext, ModalTypes } from "../../Modal/Modal";
-import { APITypes, Dates, UserInputRefs } from "../../../types";
 import UserInput from "../../UserInput/UserInput";
 
 type Props = {
@@ -54,23 +53,22 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 			buttonText="Boka"
 			title="Personuppgifter"
 			onSubmit={async (_) => {
-				const { errors, booking } = await makeAPIRequest("/bookings", {
-					method: "POST",
-					data: {
-						bunks: selectedBunks.map((bunk) => bunk.id),
-						user_email: memberref.current.value
-							.toLowerCase()
-							.trim(),
-						start_date: arrival,
-						end_date: departure,
-					},
-				});
-				if (errors) {
-					handleModal({
-						type: "error",
-						data: parseError(JSON.parse(errors)),
-					});
-				} else {
+				const { handledError, booking } = await makeAPIRequest(
+					"/bookings",
+					{
+						method: "POST",
+						data: {
+							bunks: selectedBunks.map((bunk) => bunk.id),
+							user_email: memberref.current.value
+								.toLowerCase()
+								.trim(),
+							start_date: arrival,
+							end_date: departure,
+						},
+						handleModal,
+					}
+				);
+				if (!handledError) {
 					nextStep(booking);
 				}
 			}}

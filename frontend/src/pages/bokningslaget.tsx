@@ -31,7 +31,7 @@ const Bokningsläget: React.FC = () => {
 
 			setIsLoading(true);
 
-			const { errors, bookings } = await makeAPIRequest(
+			const { handledError, bookings } = await makeAPIRequest(
 				`/bookings?${createGetParameters({
 					start_date,
 					end_date,
@@ -43,12 +43,7 @@ const Bokningsläget: React.FC = () => {
 				departure: end_date as string,
 			});
 
-			if (errors) {
-				handleModal({
-					type: "error",
-					data: parseError(JSON.parse(errors)),
-				});
-			} else {
+			if (!handledError) {
 				setBookings(bookings as APITypes.Booking[]);
 			}
 

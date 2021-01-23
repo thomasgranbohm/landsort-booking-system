@@ -26,7 +26,7 @@ class UserController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond([
@@ -53,7 +53,7 @@ class UserController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond(["updated" => $user->update($validator->validated())]);

@@ -52,7 +52,7 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond([
@@ -73,7 +73,7 @@ class BunkController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
@@ -103,7 +103,7 @@ class BunkController extends Controller
 			)->get();
 
 		if ($validator->errors()->isNotEmpty()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond(array("bunks" => $availableBunks));
@@ -118,7 +118,7 @@ class BunkController extends Controller
 			]
 		);
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		$location = $validator

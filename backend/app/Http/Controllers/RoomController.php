@@ -34,7 +34,7 @@ class RoomController extends Controller
 			'location' => 'required|unique:rooms|min:1|max:16'
 		]);
 		if ($validator->fails())
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 
 		return $this->respond([
 			"created" => Room::create($validator->validated())
@@ -53,7 +53,7 @@ class RoomController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		$start_date = Carbon::parse(date('Y-m-d', strtotime($validator->validated()['start_date'])));
@@ -83,7 +83,7 @@ class RoomController extends Controller
 			)->get();
 
 		if ($validator->errors()->isNotEmpty()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond(["bunks" => $availableBunks]);
@@ -100,7 +100,7 @@ class RoomController extends Controller
 			'location' => 'required|unique:rooms|max:16'
 		]);
 		if ($validator->fails())
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 
 		$room->location = $validator->validated()['location'];
 

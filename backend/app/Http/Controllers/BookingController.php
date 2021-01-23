@@ -42,7 +42,7 @@ class BookingController extends Controller
 		$bookings = $this->getBookingsInRange($start_date, $end_date, $dateBeforeEnd, $dateAfterStart);
 
 		if ($validator->errors()->isNotEmpty()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		return $this->respond(array("bookings" => $bookings));
@@ -62,7 +62,7 @@ class BookingController extends Controller
 		);
 
 		if ($validator->fails()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		$bunks = $validator->validated()['bunks'];
@@ -90,7 +90,7 @@ class BookingController extends Controller
 		};
 
 		if ($validator->errors()->isNotEmpty()) {
-			return $this->errors($validator->errors()->toJson());
+			return $this->errors($validator->errors());
 		}
 
 		$booking = Booking::create([

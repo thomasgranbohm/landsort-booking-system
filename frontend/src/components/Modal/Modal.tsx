@@ -8,7 +8,7 @@ import styles from "./Modal.module.scss";
 
 const getClass = getClassFunction(styles);
 
-type ModalState = {
+export type ModalState = {
 	type?: "success" | "error";
 	data?: any;
 	title?: string;
@@ -55,7 +55,7 @@ const Modal = () => {
 
 	const { buttonText, data, title, type, onClose } = modalContent;
 
-	const isError = type === "error";
+	const isError = type === "error" || data instanceof Error;
 	const isSuccess = type === "success";
 
 	const onClick = () => {

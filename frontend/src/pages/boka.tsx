@@ -33,7 +33,7 @@ const Boka = () => {
 
 			setIsLoading(true);
 
-			const { errors, bunks } = await makeAPIRequest(
+			const { handledError, bunks } = await makeAPIRequest(
 				`/bunks/available?${createGetParameters({
 					start_date,
 					end_date,
@@ -45,12 +45,7 @@ const Boka = () => {
 				departure: end_date as string,
 			});
 
-			if (errors) {
-				handleModal({
-					type: "error",
-					data: parseError(JSON.parse(errors)),
-				});
-			} else {
+			if (!handledError) {
 				const rooms: APITypes.Room[] = mapToRooms(bunks);
 				setRooms(rooms as APITypes.Room[]);
 			}
