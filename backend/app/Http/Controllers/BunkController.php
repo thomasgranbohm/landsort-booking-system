@@ -24,7 +24,7 @@ class BunkController extends Controller
 	public function index(Room $room)
 	{
 		return $this->respond(
-			array("bunks" => Room::with('bunks:id,location,room_id', 'bunks.bookings:id,start_date,end_date,user_id', 'bunks.bookings.user:id,firstname,lastname')
+			array("bunks" => Room::with('bunks', 'bunks.bookings', 'bunks.bookings.user')
 				->find($room->id)
 				->bunks)
 		);
@@ -36,7 +36,7 @@ class BunkController extends Controller
 			array(
 				"bunk" => $bunk
 					->where("id", $bunk->id)
-					->with('room:id,location', 'bookings:id,start_date,end_date,confirmed')
+					->with('room', 'bookings')
 					->first()
 			)
 		);

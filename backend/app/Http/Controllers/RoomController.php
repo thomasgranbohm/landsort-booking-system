@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Contracts\Service\Attribute\Required;
+
 
 /*
  *	Verb 		URI 			Action 		Route Name
@@ -20,7 +20,6 @@ use Symfony\Contracts\Service\Attribute\Required;
  *	PUT/PATCH 	/rooms/{room} 	update 		rooms.update
  *	DELETE 		/rooms/{room} 	destroy 	rooms.destroy
  */
-
 
 class RoomController extends Controller
 {

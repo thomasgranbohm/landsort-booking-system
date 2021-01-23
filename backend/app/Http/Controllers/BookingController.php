@@ -106,7 +106,7 @@ class BookingController extends Controller
 		return $this->respond(
 			array(
 				"booking" => Booking::where("id", $booking->id)
-					->with("user:id,firstname,lastname,email", "bunks:id,location,room_id", "bunks.room:id,location")
+					->with("user", "bunks", "bunks.room")
 					->first(["id", "start_date", "end_date", "user_id"])
 			)
 		);
@@ -117,8 +117,8 @@ class BookingController extends Controller
 		$this->removeOutOfDate();
 		try {
 			$booking = Booking::where('id', $booking->id)
-				->with(['bunks:id,location,room_id', 'user:id,firstname,lastname,email,phonenumber', 'bunks.room:id,location'])
-				->firstOrFail(['id', 'start_date', 'end_date', 'user_id']);
+				->with(['bunks', 'bunks.room', 'user'])
+				->firstOrFail();
 			return $this->respond(array("booking" => $booking));
 		} catch (\Throwable $th) {
 			return $this->errors(["booking" => "Could not find booking."]);

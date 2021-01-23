@@ -24,7 +24,6 @@ class Booking extends Model
 	];
 
 	protected $visible = [
-		"id",
 		"user",
 		"bunks",
 		"start_date",

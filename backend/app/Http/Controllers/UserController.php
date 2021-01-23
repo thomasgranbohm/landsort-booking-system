@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ConfirmationMail;
-use App\Mail\TestMail;
-use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -41,12 +37,7 @@ class UserController extends Controller
 
 	public function show(User $user)
 	{
-		return $this->respond(["user" => User::where('id', $user->id)->with('bookings')->first()]);
-	}
-
-	public function email()
-	{
-		return (new ConfirmationMail(Booking::find("4c041f1c-8915-460b-aab6-d0dba3468423")))->render();
+		return $this->respond(["user" => User::where('id', $user->id)->with('bookings', 'bookings.bunks', 'bookings.bunks.room')->first()]);
 	}
 
 	public function update(Request $request, User $user)
