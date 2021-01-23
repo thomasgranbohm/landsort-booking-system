@@ -1,6 +1,6 @@
 import getClassFunction from "../../functions/getClasses";
 import Booking from "../Booking/Booking";
-import { APITypes } from "../types";
+import { APITypes } from "../../types";
 import styles from "./BookingContainer.module.scss";
 
 const getClass = getClassFunction(styles);

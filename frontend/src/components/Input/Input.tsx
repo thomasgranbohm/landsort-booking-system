@@ -1,7 +1,7 @@
 import React, { forwardRef, RefObject } from "react";
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
-import { AnyProps } from "../types";
+import { AnyProps } from "../../types";
 import styles from "./Input.module.scss";
 
 const getClass = getClassFunction(styles);

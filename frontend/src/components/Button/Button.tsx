@@ -1,6 +1,6 @@
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
-import { AnyProps, ClassNameProp } from "../types";
+import { AnyProps, ClassNameProp } from "../../types";
 import styles from "./Button.module.scss";
 
 const getClass = getClassFunction(styles);

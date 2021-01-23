@@ -1,7 +1,7 @@
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
 import Heading from "../Heading/Heading";
-import { ClassNameProp, Dates, HeadingTypes } from "../types";
+import { ClassNameProp, Dates, HeadingTypes } from "../../types";
 import styles from "./DateRangeHeader.module.scss";
 
 const getClass = getClassFunction(styles);

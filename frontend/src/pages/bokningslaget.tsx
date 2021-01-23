@@ -8,7 +8,7 @@ import HorizontalRule from "../components/HorizontalRule/HorizontalRule";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { ModalContext, ModalTypes } from "../components/Modal/Modal";
 import PageTitle from "../components/PageTitle/PageTitle";
-import { APITypes, Dates } from "../components/types";
+import { APITypes, Dates } from "../types";
 import createGetParameters from "../functions/createGetParameters";
 import makeAPIRequest from "../functions/makeAPIRequest";
 import parseError from "../functions/parseError";

@@ -3,7 +3,7 @@ import mapToRooms from "../../functions/mapToRooms";
 import DateRangeHeader from "../DateRangeHeader/DateRangeHeader";
 import Heading from "../Heading/Heading";
 import HorizontalDivider from "../HorizontalDivider/HorizontalDivider";
-import { APITypes } from "../types";
+import { APITypes } from "../../types";
 import styles from "./Booking.module.scss";
 
 const getClass = getClassFunction(styles);

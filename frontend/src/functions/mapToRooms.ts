@@ -1,5 +1,5 @@
 import { dissoc, dissocPath } from "ramda";
-import { APITypes } from "../components/types";
+import { APITypes } from "../types";
 
 const findRoom = (rooms: APITypes.Room[], location: string) =>
 	rooms.find((room) => room.location === location);

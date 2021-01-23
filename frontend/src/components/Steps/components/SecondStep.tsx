@@ -7,7 +7,7 @@ import HorizontalRule from "../../HorizontalRule/HorizontalRule";
 import Input from "../../Input/Input";
 import InputWithLabel from "../../InputWithLabel/InputWithLabel";
 import { ModalContext, ModalTypes } from "../../Modal/Modal";
-import { APITypes, Dates, UserInputRefs } from "../../types";
+import { APITypes, Dates, UserInputRefs } from "../../../types";
 import UserInput from "../../UserInput/UserInput";
 
 type Props = {

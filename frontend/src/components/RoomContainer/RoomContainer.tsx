@@ -1,6 +1,6 @@
 import getClassFunction from "../../functions/getClasses";
 import Room from "../Room/Room";
-import { APITypes } from "../types";
+import { APITypes } from "../../types";
 import styles from "./RoomContainer.module.scss";
 
 const getClass = getClassFunction(styles);

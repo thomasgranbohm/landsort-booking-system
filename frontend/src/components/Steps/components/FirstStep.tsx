@@ -1,7 +1,7 @@
 import { Dispatch, FormEvent, SetStateAction } from "react";
 import Form from "../../Form/Form";
 import RoomContainer from "../../RoomContainer/RoomContainer";
-import { APITypes } from "../../types";
+import { APITypes } from "../../../types";
 
 type Props = {
 	rooms: APITypes.Room[];

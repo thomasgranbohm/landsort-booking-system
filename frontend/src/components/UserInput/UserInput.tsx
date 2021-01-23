@@ -1,7 +1,7 @@
 import getClassFunction from "../../functions/getClasses";
 import Input from "../Input/Input";
 import InputWithLabel from "../InputWithLabel/InputWithLabel";
-import { UserInputRefs } from "../types";
+import { UserInputRefs } from "../../types";
 
 type Props = UserInputRefs;
 

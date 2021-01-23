@@ -1,6 +1,6 @@
 import { useState } from "react";
 import getClassFunction from "../../functions/getClasses";
-import { APITypes, Dates } from "../types";
+import { APITypes, Dates } from "../../types";
 import FirstStep from "./components/FirstStep";
 import Indicator from "./components/Indicator";
 import SecondStep from "./components/SecondStep";

@@ -1,6 +1,6 @@
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
-import { ClassNameProp, HeadingTypes } from "../types";
+import { ClassNameProp, HeadingTypes } from "../../types";
 import styles from "./Heading.module.scss";
 
 const getClass = getClassFunction(styles);

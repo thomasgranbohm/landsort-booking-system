@@ -1,7 +1,7 @@
 import { Children } from "react";
 import joinClasses from "../../functions/joinClasses";
 import HorizontalRule from "../HorizontalRule/HorizontalRule";
-import { ClassNameProp } from "../types";
+import { ClassNameProp } from "../../types";
 
 type Props = ClassNameProp;
 

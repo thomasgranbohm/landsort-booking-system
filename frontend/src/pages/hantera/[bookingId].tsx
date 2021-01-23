@@ -6,7 +6,7 @@ import DateRangeHeader from "../../components/DateRangeHeader/DateRangeHeader";
 import HorizontalDivider from "../../components/HorizontalDivider/HorizontalDivider";
 import Loader from "../../components/Loader/Loader";
 import { ModalContext, ModalTypes } from "../../components/Modal/Modal";
-import { APITypes } from "../../components/types";
+import { APITypes } from "../../types";
 import makeAPIRequest from "../../functions/makeAPIRequest";
 import parseError from "../../functions/parseError";
 

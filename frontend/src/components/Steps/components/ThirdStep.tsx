@@ -2,7 +2,7 @@ import { useRouter } from "next/dist/client/router";
 import Booking from "../../Booking/Booking";
 import Button from "../../Button/Button";
 import Heading from "../../Heading/Heading";
-import { APITypes } from "../../types";
+import { APITypes } from "../../../types";
 
 type Props = {
 	booking: APITypes.Booking;
