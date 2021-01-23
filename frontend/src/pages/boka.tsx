@@ -47,7 +47,7 @@ const Boka = () => {
 
 			if (errors) {
 				handleModal({
-					error: true,
+					type: "error",
 					data: parseError(JSON.parse(errors)),
 				});
 			} else {

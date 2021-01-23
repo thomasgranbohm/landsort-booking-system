@@ -45,7 +45,7 @@ const Bokningsläget: React.FC = () => {
 
 			if (errors) {
 				handleModal({
-					error: true,
+					type: "error",
 					data: parseError(JSON.parse(errors)),
 				});
 			} else {

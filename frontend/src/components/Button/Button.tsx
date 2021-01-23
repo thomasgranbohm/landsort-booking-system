@@ -8,7 +8,7 @@ const getClass = getClassFunction(styles);
 type Props = {
 	value?: string;
 	onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-	customType?: "continue" | "return";
+	customType?: "continue" | "return" | "none";
 	withoutContent?: boolean;
 	inline?: boolean;
 } & ClassNameProp &

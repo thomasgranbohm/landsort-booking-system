@@ -1,14 +1,19 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, createRef, useContext, useState } from "react";
 import ReactDOM from "react-dom";
 import getClassFunction from "../../functions/getClasses";
 import joinClasses from "../../functions/joinClasses";
+import Button from "../Button/Button";
+import Heading from "../Heading/Heading";
 import styles from "./Modal.module.scss";
 
 const getClass = getClassFunction(styles);
 
 type ModalState = {
-	error: boolean;
+	type?: "success" | "error";
 	data?: any;
+	title?: string;
+	buttonText?: string;
+	onClose?: () => void;
 };
 
 export type ModalTypes = {
@@ -30,9 +35,7 @@ export const ModalProvider: React.FC = ({ children }) => {
 
 export const useModal = (): ModalTypes => {
 	const [modal, setModal] = useState<boolean>(false);
-	const [modalContent, setModalContent] = useState<ModalState>({
-		error: false,
-	});
+	const [modalContent, setModalContent] = useState<ModalState>({});
 
 	const handleModal = (state?: ModalState) => {
 		setModal(!modal);
@@ -48,18 +51,46 @@ const Modal = () => {
 		ModalContext
 	);
 	if (!modal) return null;
+	const containerRef = createRef<HTMLDivElement>();
+
+	const { buttonText, data, title, type, onClose } = modalContent;
+
+	const isError = type === "error";
+	const isSuccess = type === "success";
+
+	const onClick = () => {
+		handleModal();
+		if (!!onClose) onClose();
+	};
 
 	return ReactDOM.createPortal(
-		<div className={getClass("container")} onClick={() => handleModal()}>
+		<div
+			className={getClass("container")}
+			onClick={(e) => e.target === containerRef.current && onClick()}
+			ref={containerRef}
+		>
 			<div
 				className={joinClasses(
 					[getClass("modal"), true],
-					[getClass("error"), modalContent.error]
+					[getClass("error"), isError],
+					[getClass("success"), isSuccess]
 				)}
 			>
-				<h1>Ett fel uppstod!</h1>
-				<p>{modalContent.data}</p>
-				<button onClick={() => handleModal()}>Stäng</button>
+				<Heading type="h2">
+					{isError ? "Ett fel uppstod." : title}
+				</Heading>
+				<p>{data}</p>
+				<Button
+					inline
+					customType={
+						(isError && "return") ||
+						(isSuccess && "continue") ||
+						"none"
+					}
+					onClick={onClick}
+				>
+					{buttonText || "Stäng"}
+				</Button>
 			</div>
 		</div>,
 		document.getElementById("modal")

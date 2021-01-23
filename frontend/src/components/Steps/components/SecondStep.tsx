@@ -67,7 +67,7 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 				});
 				if (errors) {
 					handleModal({
-						error: true,
+						type: "error",
 						data: parseError(JSON.parse(errors)),
 					});
 				} else {

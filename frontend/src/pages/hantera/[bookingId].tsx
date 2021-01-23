@@ -31,7 +31,7 @@ const Hantera = () => {
 
 			if (errors) {
 				handleModal({
-					error: true,
+					type: "error",
 					data: parseError(JSON.parse(errors)),
 				});
 			} else {
@@ -44,6 +44,46 @@ const Hantera = () => {
 		asyncFunction();
 	}, [router.query]);
 
+	const confirmBooking = async () => {
+		const { errors } = await makeAPIRequest(
+			`/bookings/${bookingId}/confirm`
+		);
+		if (errors) {
+			handleModal({
+				type: "error",
+				data: parseError(errors),
+			});
+		} else {
+			handleModal({
+				title: "Bokning godkänd!",
+				type: "success",
+				data: "Din bokning är nu godkänd. Välkommen!",
+				buttonText: "Tillbaka till start",
+				onClose: () => router.push("/"),
+			});
+		}
+	};
+
+	const cancelBooking = async () => {
+		const { errors } = await makeAPIRequest(
+			`/bookings/${bookingId}/cancel`
+		);
+		if (errors) {
+			handleModal({
+				type: "error",
+				data: parseError(errors),
+			});
+		} else {
+			handleModal({
+				type: "success",
+				title: "Bokning avbokad!",
+				data: "Din bokning är nu avbokad.",
+				buttonText: "Tillbaka till start",
+				onClose: () => router.push("/"),
+			});
+		}
+	};
+
 	return (
 		<Loader isLoading={isLoading}>
 			{booking && (
@@ -54,49 +94,12 @@ const Hantera = () => {
 					/>
 					<Booking booking={booking} />
 					<div>
-						<Button
-							customType="continue"
-							withoutContent
-							inline
-							onClick={async () => {
-								const {
-									errors,
-									...rest
-								} = await makeAPIRequest(
-									`/bookings/${bookingId}/confirm`
-								);
-								if (errors) {
-									handleModal({
-										error: true,
-										data: parseError(errors),
-									});
-								} else {
-									console.log("rest", rest);
-								}
-							}}
-						>
-							Godkänn bokning
-						</Button>
+						{}
 						<Button
 							customType="return"
 							withoutContent
 							inline
-							onClick={async () => {
-								const {
-									errors,
-									...rest
-								} = await makeAPIRequest(
-									`/bookings/${bookingId}/cancel`
-								);
-								if (errors) {
-									handleModal({
-										error: true,
-										data: parseError(errors),
-									});
-								} else {
-									console.log("rest", rest);
-								}
-							}}
+							onClick={cancelBooking}
 						>
 							Avboka bokning
 						</Button>
