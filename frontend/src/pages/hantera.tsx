@@ -30,7 +30,6 @@ const Hantera = () => {
 					handleModal,
 					modalState: {
 						onClose: () => router.push("/"),
-						buttonText: "Tillbaka till start",
 					},
 				}
 			);
