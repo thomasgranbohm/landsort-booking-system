@@ -78,7 +78,16 @@ const Hantera = () => {
 					/>
 					<Booking booking={booking} />
 					<div>
-						{}
+						{!booking.confirmed && (
+							<Button
+								customType="continue"
+								withoutContent
+								inline
+								onClick={confirmBooking}
+							>
+								Godkänn bokning
+							</Button>
+						)}
 						<Button
 							customType="return"
 							withoutContent
