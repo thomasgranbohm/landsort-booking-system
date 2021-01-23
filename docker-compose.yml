@@ -46,8 +46,8 @@ services:
     frontend:
         env_file: .env
         image: node:14
-        # command: bash -c "yarn prod || (yarn && yarn prod)"
-        command: bash -c "yarn start"
+        command: bash -c "yarn prod || (yarn && yarn prod)"
+        # command: bash -c "yarn start"
         ports:
             - 3000:3000
         volumes:

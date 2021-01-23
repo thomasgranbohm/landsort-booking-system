@@ -13,7 +13,7 @@
 
 		<p><b>Du måste godkänna bokningen inom {{ config('global.confirmation_period') }} minuter för att den ska gälla!</b></p>
 
-		<p>För att godkänna eller avbryta bokningen, <a href="{{ config('app.url') }}/hantera/{{ $id }}"><b>vänligen klicka här.</b></a></p>
+		<p>För att godkänna eller avbryta bokningen, <a href="{{ config('app.url') }}/hantera/?bokningsId={{ $id }}"><b>vänligen klicka här.</b></a></p>
 	</main>
 
 	<hr>
@@ -21,9 +21,10 @@
 	<footer>
 		<address>
 			Vänliga hälsningar,<br>
-			Landsorts Fågelstation <br>
-			149 95 Nynäshamn <br>
-			<a href="tel:+46725203401">072-520 34 01</a>
+			Landsorts Fågelstation<br>
+			149 95 Nynäshamn<br>
+			<a href="tel:+46725203401">072-520 34 01</a><br>
+			<a href="mailto:landsort@granbohm.dev">landsort@granbohm.dev</a>
 		</address>
 	</footer>
 

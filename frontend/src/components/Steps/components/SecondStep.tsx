@@ -73,8 +73,6 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 				}
 			}}
 		>
-			{/* <UserInputs />
-			<HorizontalRule /> */}
 			<InputWithLabel
 				label="Medlemmens mailaddress"
 				forInput="memberemail"
@@ -83,7 +81,7 @@ const SecondStep = ({ selectedBunks, nextStep, arrival, departure }: Props) => {
 				<Input
 					ref={memberref}
 					name="memberemail"
-					type="text"
+					type="email"
 					placeholder="sven.svensson@exampel.se"
 				/>
 			</InputWithLabel>

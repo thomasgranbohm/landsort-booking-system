@@ -79,7 +79,7 @@ const Modal = () => {
 				<Heading type="h2">
 					{isError ? "Ett fel uppstod." : title}
 				</Heading>
-				<p>{data}</p>
+				<p className={getClass("data")}>{data}</p>
 				<Button
 					inline
 					customType={

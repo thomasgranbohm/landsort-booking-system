@@ -1,13 +1,13 @@
 import { useRouter } from "next/dist/client/router";
 import { useContext, useEffect, useState } from "react";
-import Booking from "../../components/Booking/Booking";
-import Button from "../../components/Button/Button";
-import DateRangeHeader from "../../components/DateRangeHeader/DateRangeHeader";
-import HorizontalDivider from "../../components/HorizontalDivider/HorizontalDivider";
-import Loader from "../../components/Loader/Loader";
-import { ModalContext, ModalTypes } from "../../components/Modal/Modal";
-import makeAPIRequest from "../../functions/makeAPIRequest";
-import { APITypes } from "../../types";
+import Booking from "../components/Booking/Booking";
+import Button from "../components/Button/Button";
+import DateRangeHeader from "../components/DateRangeHeader/DateRangeHeader";
+import HorizontalDivider from "../components/HorizontalDivider/HorizontalDivider";
+import Loader from "../components/Loader/Loader";
+import { ModalContext, ModalTypes } from "../components/Modal/Modal";
+import makeAPIRequest from "../functions/makeAPIRequest";
+import { APITypes } from "../types";
 
 const Hantera = () => {
 	const router = useRouter();
@@ -19,21 +19,28 @@ const Hantera = () => {
 
 	useEffect(() => {
 		const asyncFunction = async () => {
-			const { bookingId } = router.query;
+			const { bokningsId: bookingId } = router.query;
 			if (!bookingId) return;
 
 			setIsLoading(true);
 
 			const { booking, handledError } = await makeAPIRequest(
-				`/bookings/${bookingId}`
+				`/bookings/${bookingId}`,
+				{
+					handleModal,
+					modalState: {
+						onClose: () => router.push("/"),
+						buttonText: "Tillbaka till start",
+					},
+				}
 			);
 
 			if (!handledError) {
 				setBookingId(bookingId as string);
 				setBooking(booking);
-
-				setIsLoading(false);
 			}
+
+			setIsLoading(false);
 		};
 		asyncFunction();
 	}, [router.query]);

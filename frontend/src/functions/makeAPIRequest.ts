@@ -5,6 +5,7 @@ import parseError from "./parseError";
 
 type Config = {
 	handleModal?: (state: ModalState) => void;
+	modalState?: ModalState;
 } & AxiosRequestConfig;
 
 type Returns = {
@@ -34,9 +35,12 @@ const makeAPIRequest = async (
 	} catch (err) {
 		if (err.response) {
 			if (config && config.handleModal) {
-				config.handleModal({
+				const { handleModal } = config;
+				const modalState = config.modalState || {};
+				handleModal({
 					type: "error",
 					data: parseError(err.response.data.errors),
+					...modalState,
 				});
 			}
 			return {
