@@ -2,9 +2,9 @@
 
 ## Krav för användare
 
--   [ ] Bokning och avbokning av sovplats
--   [ ] Mejl bekräftelse vid bokning och avbokning
--   [ ] Avbokning ska ske genom avbokningslänk
+-   [x] Bokning och avbokning av sovplats
+-   [x] Mejl bekräftelse vid bokning och avbokning
+-   [x] Avbokning ska ske genom avbokningslänk
 -   [x] Se bokade dagar samt platser
 -   [ ] Visa pris för markerade dagar
 -   [ ] Påminnelse om bokning en vecka innan
